@@ -11,7 +11,7 @@ package_dir = {
 }
 
 setup(
-    name='citation_crawler',
+    name='citation-rabbot',
     version='0.0.0',
     author='yindaheng98',
     author_email='yindaheng98@gmail.com',
