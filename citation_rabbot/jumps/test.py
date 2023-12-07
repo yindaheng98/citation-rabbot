@@ -1,13 +1,14 @@
-from typing import Tuple, Dict
+from telegram import Message
+from typing import Tuple, Dict, List
 from neo4j import Result
 
 
-def test_message2query(msg: str) -> Tuple[str, Dict]:
+def test_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
     pass
 
 
-def test_result2message(res: Result) -> str:
+def test_results2message(res: List[Result]) -> str:
     pass
 
 
-test_jump = ("test", test_message2query, test_result2message)
+test_jump = ("test", test_message2querys, test_results2message)

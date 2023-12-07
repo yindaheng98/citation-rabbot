@@ -8,7 +8,7 @@ def add_argument_jump(parser: argparse.ArgumentParser, *flags, dest: str = 'jump
         flags = ['-j', '--jump']
     parser.add_argument(
         *flags, dest=dest, action='append', required=False, default=[],
-        help=f'A jump! (a tuple: <name>,<message2query>,<result2message>).'
+        help=f'A jump! (a tuple: <name>,<message2querys>,<results2message>).'
     )
 
 
