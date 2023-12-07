@@ -42,15 +42,35 @@ def papers_results2message(res: List) -> str:
     for node, cited in res[0]:
         title = node['title']
         msg += f"{cited} cited: {title}\n"
+    if msg == "":
+        msg = "No papers yet"
     return msg
 
 
 def references_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    pass
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+    if len(splited) <= 0:
+        return
+    paper_k, paper_v = splited[0]
+    return [(
+        "MATCH (a:Publication)<-[:CITE]-(:Publication {%s:$value}) "
+        "MATCH (c:Publication)-[:CITE]->(a:Publication) "
+        "RETURN a, count(c) AS ct ORDER BY ct DESC" % paper_k,
+        {"value": paper_v}
+    )]
 
 
 def citations_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    pass
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+    if len(splited) <= 0:
+        return
+    paper_k, paper_v = splited[0]
+    return [(
+        "MATCH (a:Publication)-[:CITE]->(:Publication {%s:$value}) "
+        "MATCH (c:Publication)-[:CITE]->(a:Publication) "
+        "RETURN a, count(c) AS ct ORDER BY ct DESC" % paper_k,
+        {"value": paper_v}
+    )]
 
 
 paper_authors_jump = ("paper_authors", paper_authors_message2querys, authors_results2message)
