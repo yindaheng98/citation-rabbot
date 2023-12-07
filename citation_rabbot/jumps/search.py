@@ -18,8 +18,8 @@ def search_by_title_message2querys(msg: str) -> List[Tuple[str, Dict]]:
         values[f"$value{i+1}"] = s.lower()
     return [(
         init_match +
-        "MATCH (c:Publication)-[:CITE]->(p:Publication) "
-        f"RETURN p, COUNT(c) AS ct ORDER BY ct DESC LIMIT {limit}",
+        "MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) "
+        f"RETURN p, j, COUNT(c) AS ct ORDER BY ct DESC LIMIT {limit}",
         values
     )]
 
