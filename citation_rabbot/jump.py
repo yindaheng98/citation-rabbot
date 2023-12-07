@@ -9,7 +9,7 @@ class Rabbot:
         self.bot = bot
         self.session = session
 
-    def set_jump(self, name: str, message2query: Callable[[str], Tuple[str, Dict]], result2message: Callable[[Result], str]):
+    def add_jump(self, name: str, message2query: Callable[[str], Tuple[str, Dict]], result2message: Callable[[Result], str]):
         async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text = update.message
             query, kwargs = message2query(text)
