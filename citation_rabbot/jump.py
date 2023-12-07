@@ -4,6 +4,7 @@ from typing import Callable, Tuple, Dict, List
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import filters, Application, ContextTypes, CommandHandler, MessageHandler
+from telegram.constants import ParseMode
 
 
 class Rabbot:
@@ -25,7 +26,7 @@ class Rabbot:
             for query, kwargs in querys:
                 results.append(self.session.execute_read(lambda tx: tx.run(query, **kwargs).values()))
             message, reply_markup = results2message(results)
-            await update.message.reply_text(text=message, reply_markup=reply_markup)
+            await update.message.reply_text(text=message, reply_to_message_id=update.message.id, reply_markup=reply_markup, parse_mode=ParseMode.HTML)
         command_handler = CommandHandler(name, lambda update, context: handler(update.message.text, update, context))
         self.app.add_handler(command_handler)
 

@@ -54,7 +54,10 @@ def papers_results2message(res: List):
     keyboard = []
     for i, (node, cited) in enumerate(res[0]):
         title = node['title']
-        msg += f"{i+1}: {cited} cited: {title} {node['year']}\n"
+        if "doi" in node:
+            msg += f'{i+1}: <b>{cited}</b> cited: <a href="https://doi.org/{node["doi"]}">{title}</a> {node["year"]}\n'
+        else:
+            msg += f"{i+1}: <b>{cited}</b> cited: {title} {node['year']}\n"
         keyboard.append([
             InlineKeyboardButton(f"{i+1}'s Authors", switch_inline_query_current_chat=f"/paper_authors title_hash:{node['title_hash']}"),
             InlineKeyboardButton(f"{i+1}'s Citations", switch_inline_query_current_chat=f"/citations title_hash:{node['title_hash']}"),
