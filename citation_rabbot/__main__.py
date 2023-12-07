@@ -4,9 +4,9 @@ from neo4j import GraphDatabase
 from telegram.ext import ApplicationBuilder
 from .arg import add_argument_jump, parse_args_jump
 from .rabbot import Rabbot
-from .jumps import start_jump, paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
+from .jumps import paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
 default_jumps = [
-    start_jump, paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
+    paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
 ]
 default_jumps_name = [
     "start_jump", "paper_authors_jump", "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump"
