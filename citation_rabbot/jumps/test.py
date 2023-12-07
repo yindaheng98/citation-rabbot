@@ -1,14 +1,14 @@
 from typing import Tuple, Dict, List
 
 
-def test_message2querys(_) -> List[Tuple[str, Dict]]:
+def start_message2querys(_) -> List[Tuple[str, Dict]]:
     return [
         ("MATCH ()-[r]->() RETURN type(r), COUNT(*)", {}),
         ("MATCH (n) RETURN labels(n), COUNT(n)", {})
     ]
 
 
-def test_results2message(res: List):
+def start_results2message(res: List):
     msg = "I'm jumping! Here is the places I'm jumping:\n"
     edge_counts, node_counts = res
     msg += "This place has lots of nodes:\n"
@@ -20,4 +20,4 @@ def test_results2message(res: List):
     return msg, None
 
 
-test_jump = ("test", test_message2querys, test_results2message)
+start_jump = ("start", start_message2querys, start_results2message)
