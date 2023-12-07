@@ -29,7 +29,7 @@ def authors_results2message(res: List):
             k, v = "authorId", node["authorId"]
         if k is not None:
             keyboard.append([
-                InlineKeyboardButton(f"{i+1}'s Papers", switch_inline_query_current_chat=f"/author_papers title_hash:{node['title_hash']}"),
+                InlineKeyboardButton(f"{i+1}'s Papers", switch_inline_query_current_chat=f"/author_papers {k}:{v}"),
             ])
     if msg == "":
         msg = "No authors yet"
