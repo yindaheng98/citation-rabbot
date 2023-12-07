@@ -7,7 +7,8 @@ with open("README.md", "r", encoding='utf8') as fh:
     long_description = fh.read()
 
 package_dir = {
-    'citation_rabbot': 'citation_rabbot'
+    'citation_rabbot': 'citation_rabbot',
+    'citation_rabbot.jumps': 'citation_rabbot/jumps'
 }
 
 setup(
