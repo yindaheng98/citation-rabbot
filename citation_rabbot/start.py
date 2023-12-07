@@ -19,6 +19,3 @@ def start_results2message(res: List):
         msg += f"{count} {name} edges\n"
     msg += 'Want to know what I really is? Here is <a href="https://github.com/yindaheng98/citation-rabbot">my code</a>'
     return msg, None
-
-
-start_jump = ("start", start_message2querys, start_results2message, "Show basic info of database")

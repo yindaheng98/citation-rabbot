@@ -4,6 +4,7 @@ from neo4j import GraphDatabase
 from telegram.ext import ApplicationBuilder
 from .arg import add_argument_jump, parse_args_jump
 from .rabbot import Rabbot
+from .start import start_message2querys, start_results2message
 from .jumps import paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
 default_jumps = [
     paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
@@ -45,4 +46,5 @@ with GraphDatabase.driver(args.uri, auth=args.auth) as driver:
         rabbot = Rabbot(app=application, session=session)
         for name, (message2query, result2message) in jump_dict.items():
             rabbot.add_jump(name, message2query, result2message)
+        rabbot.add_jump('start', start_message2querys, start_results2message)
         application.run_polling()
