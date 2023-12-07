@@ -24,4 +24,4 @@ def search_by_title_message2querys(msg: str) -> List[Tuple[str, Dict]]:
     )]
 
 
-search_by_title_jump = ("search_by_title", search_by_title_message2querys, papers_results2message, None)
+search_by_title_jump = ("search_by_title", search_by_title_message2querys, papers_results2message, "Search papers by keywords in title")
