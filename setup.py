@@ -12,7 +12,7 @@ package_dir = {
 
 setup(
     name='citation-rabbot',
-    version='0.0.0',
+    version='0.1',
     author='yindaheng98',
     author_email='yindaheng98@gmail.com',
     url='https://github.com/yindaheng98/citation-rabbot',
@@ -27,6 +27,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        'python-telegram-bot>=20.7'
+        'python-telegram-bot>=20.7',
+        'neo4j>=5.15.0'
     ],
 )
