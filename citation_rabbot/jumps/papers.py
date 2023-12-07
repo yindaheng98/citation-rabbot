@@ -101,7 +101,7 @@ def citations_message2querys(msg: str) -> List[Tuple[str, Dict]]:
     )]
 
 
-paper_authors_jump = ("paper_authors", paper_authors_message2querys, authors_results2message)
-author_papers_jump = ("author_papers", author_papers_message2querys, papers_results2message)
-references_jump = ("references", references_message2querys, papers_results2message)
-citations_jump = ("citations", citations_message2querys, papers_results2message)
+paper_authors_jump = ("paper_authors", paper_authors_message2querys, authors_results2message, None)
+author_papers_jump = ("author_papers", author_papers_message2querys, papers_results2message, None)
+references_jump = ("references", references_message2querys, papers_results2message, None)
+citations_jump = ("citations", citations_message2querys, papers_results2message, None)

@@ -29,10 +29,15 @@ args = parser.parse_args()
 jump_list = parse_args_jump(parser)
 
 
-jump_dict = {name: (message2query, result2message) for name, message2query, result2message in jump_list}
-for name, message2query, result2message in default_jumps:
+jump_dict = {name: (message2query, result2message) for name, message2query, result2message, _ in jump_list}
+desc_dict = {name: desc for name, _, _, desc in jump_list if desc}
+desc_name = [name for name, _, _, desc in jump_list if desc]
+for name, message2query, result2message, desc in default_jumps:
     if name not in jump_dict:
         jump_dict[name] = (message2query, result2message)
+    if desc:
+        desc_dict[name] = desc
+        desc_name.append(name)
 
 application = ApplicationBuilder().token(args.token).build()
 with GraphDatabase.driver(args.uri, auth=args.auth) as driver:

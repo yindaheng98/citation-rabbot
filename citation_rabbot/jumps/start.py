@@ -21,4 +21,4 @@ def start_results2message(res: List):
     return msg, None
 
 
-start_jump = ("start", start_message2querys, start_results2message)
+start_jump = ("start", start_message2querys, start_results2message, "Show basic info of database")
