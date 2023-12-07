@@ -1,16 +1,15 @@
 from telegram import Message
 from typing import Tuple, Dict, List
-from neo4j import Result
 
 
 def test_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
     return [
-        ("MATCH ()-[r]->() RETURN type(r), count(*)", {}),
-        ("MATCH (n) RETURN labels(n),COUNT(n)", {})
+        ("MATCH ()-[r]->() RETURN type(r), COUNT(*)", {}),
+        ("MATCH (n) RETURN labels(n), COUNT(n)", {})
     ]
 
 
-def test_results2message(res: List[Result]) -> str:
+def test_results2message(res: List) -> str:
     msg = "I'm jumping! Here is the places I'm jumping:\n"
     edge_counts, node_counts = res
     msg += "This place has lots of nodes:\n"
