@@ -1,8 +1,7 @@
-from telegram import Message
 from typing import Tuple, Dict, List
 
 
-def test_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
+def test_message2querys(_) -> List[Tuple[str, Dict]]:
     return [
         ("MATCH ()-[r]->() RETURN type(r), COUNT(*)", {}),
         ("MATCH (n) RETURN labels(n), COUNT(n)", {})

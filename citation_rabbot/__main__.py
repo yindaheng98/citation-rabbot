@@ -28,7 +28,7 @@ application = ApplicationBuilder().token(args.token).build()
 application.add_handler(CommandHandler('start', start))
 with GraphDatabase.driver(args.uri, auth=args.auth) as driver:
     with driver.session() as session:
-        rabbot = Rabbot(bot=application, session=session)
+        rabbot = Rabbot(app=application, session=session)
         for name, message2query, result2message in jump_list:
             rabbot.add_jump(name, message2query, result2message)
         application.run_polling()

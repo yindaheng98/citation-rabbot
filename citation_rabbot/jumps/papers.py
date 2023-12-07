@@ -1,10 +1,10 @@
-from telegram import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from typing import Tuple, Dict, List
 import re
 
 
-def paper_authors_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+def paper_authors_message2querys(msg: str) -> List[Tuple[str, Dict]]:
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
     if len(splited) <= 0:
         return
     paper_k, paper_v = splited[0]
@@ -36,8 +36,8 @@ def authors_results2message(res: List):
     return msg, InlineKeyboardMarkup(keyboard)
 
 
-def author_papers_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+def author_papers_message2querys(msg: str) -> List[Tuple[str, Dict]]:
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
     if len(splited) <= 0:
         return
     paper_k, paper_v = splited[0]
@@ -65,8 +65,8 @@ def papers_results2message(res: List):
     return msg, InlineKeyboardMarkup(keyboard)
 
 
-def references_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+def references_message2querys(msg: str) -> List[Tuple[str, Dict]]:
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
     if len(splited) <= 0:
         return
     paper_k, paper_v = splited[0]
@@ -78,8 +78,8 @@ def references_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
     )]
 
 
-def citations_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+def citations_message2querys(msg: str) -> List[Tuple[str, Dict]]:
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
     if len(splited) <= 0:
         return
     paper_k, paper_v = splited[0]
