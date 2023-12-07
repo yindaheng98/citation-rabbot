@@ -41,7 +41,7 @@ def papers_results2message(res: List) -> str:
     msg = ""
     for node, cited in res[0]:
         title = node['title']
-        msg += f"{cited} cited: {title}\n"
+        msg += f"{cited} cited: {title} {node['year']}\n"
     if msg == "":
         msg = "No papers yet"
     return msg
