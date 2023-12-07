@@ -4,10 +4,10 @@ import re
 
 
 def paper_authors_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\s+)$", msg.text)
-    if len(splited) < 2:
+    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg.text)
+    if len(splited) <= 0:
         return
-    paper_k, paper_v = splited
+    paper_k, paper_v = splited[0]
     return [(
         "MATCH (a:Person)-[:WRITE]->(p:Publication {%s:$value}) "
         "MATCH (a:Person)-[:WRITE]->(c:Publication) "
@@ -17,7 +17,11 @@ def paper_authors_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
 
 
 def authors_results2message(res: List) -> str:
-    pass
+    msg = ""
+    for node, papers in res[0]:
+        name = node['name']
+        msg += f"{papers} papers: {name}\n"
+    return msg
 
 
 def author_papers_message2querys(msg: Message) -> List[Tuple[str, Dict]]:
