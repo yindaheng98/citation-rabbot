@@ -3,7 +3,7 @@ import logging
 from neo4j import GraphDatabase
 from telegram.ext import CommandHandler, ApplicationBuilder
 from .arg import add_argument_jump, parse_args_jump
-from .jump import Rabbot
+from .rabbot import Rabbot
 from .jumps import start_jump
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
