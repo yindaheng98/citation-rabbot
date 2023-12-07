@@ -17,6 +17,7 @@ def start_results2message(res: List):
     msg += "And lots of edges:\n"
     for name, count in edge_counts:
         msg += f"{count} {name} edges\n"
+    msg += 'Want to know what I really is? Here is <a href="https://github.com/yindaheng98/citation-rabbot">my code</a>'
     return msg, None
 
 

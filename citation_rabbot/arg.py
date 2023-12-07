@@ -3,12 +3,15 @@ import importlib
 from .jumps import *
 
 
-def add_argument_jump(parser: argparse.ArgumentParser, *flags, dest: str = 'jump') -> None:
+def add_argument_jump(parser: argparse.ArgumentParser, *flags, dest: str = 'jump', defaults_desc="") -> None:
     if len(flags) <= 0:
         flags = ['-j', '--jump']
     parser.add_argument(
         *flags, dest=dest, action='append', required=False, default=[],
-        help=f'A jump! (a tuple: <name>,<message2querys>,<results2message>).'
+        help=f'A jump! Variable name of a python tuple: <name>,<message2querys>,<results2message>,<description>. '
+        'If you set <description>, the command will become explict (show in chat by set_my_commands '
+        'like https://stackoverflow.com/questions/62607644/bot-set-my-command-using-this-function-how-to-set-commands-and-how-to-pass-arg). '
+        'Default: '+defaults_desc
     )
 
 
