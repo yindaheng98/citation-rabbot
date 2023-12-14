@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from typing import Tuple, Dict, List
-from .papers import papers_results2message
+from .papers_display import papers_results2message
 from .args import add_arguments_papers, parse_args_papers
 
 
