@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from typing import Tuple, Dict, List
-from .args import add_arguments_papers, parse_args_papers
+from .papers_args import add_arguments_papers, parse_args_papers
 
 
 author_papers_parser = ArgumentParser()
@@ -50,8 +50,3 @@ def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
     )]
-
-from .papers_display import papers_results2message
-author_papers_jump = ("author_papers", author_papers_parser, author_papers_args2querys, papers_results2message, None)
-references_jump = ("references", papers_parser, references_args2querys, papers_results2message, None)
-citations_jump = ("citations", papers_parser, citations_args2querys, papers_results2message, None)
