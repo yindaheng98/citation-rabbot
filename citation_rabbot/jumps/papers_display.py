@@ -15,25 +15,27 @@ def reconstruct_paper_args(args: object):
 def papers_results2message(res: List, args: object):
     msg = ""
     paper_args = reconstruct_paper_args(args)
-    keyboard = []
+    keyboards = []
     for i, (paper, journal, cited) in enumerate(res[0]):
         title = paper['title']
-        info = f"{journal['dblp_name']} (CCF {journal['ccf']}),{paper['year']}"
+        info = f"{journal['dblp_name']} (CCF {journal['ccf']}), {paper['date'] if 'date' in paper else paper['year']}"
         if "doi" in paper:
-            msg += f'{i+1}: <b>{cited}</b> cited: <a href="https://doi.org/{paper["doi"]}">{title}</a>,{info}\n'
+            msg += f'<b>{i+1}.</b> <a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {cited} citations\n'
         else:
-            msg += f"{i+1}: <b>{cited}</b> cited: {title},{info}\n"
-        keyboard.append([
+            msg += f"<b>{i+1}.</b> {title}, {info}, {cited} citations\n"
+
+        keyboards.append(
             InlineKeyboardButton(
-                f"{i+1}'s Authors",
-                switch_inline_query_current_chat=f"/paper_authors {paper_args} title_hash {paper['title_hash']}"),
-            InlineKeyboardButton(
-                f"{i+1}'s Citations",
-                switch_inline_query_current_chat=f"/citations {paper_args} title_hash {paper['title_hash']}"),
-            InlineKeyboardButton(
-                f"{i+1}'s References",
-                switch_inline_query_current_chat=f"/references {paper_args} title_hash {paper['title_hash']}"),
-        ])
+                f"{i+1}'s Detail",
+                switch_inline_query_current_chat=f"/paper_detail {paper_args} title_hash {paper['title_hash']}")
+        )
+    N = 3
+    keyboard = []
+    for i in range(len(keyboards) // N + 1):
+        keyboard.append([])
+        for j in range(N):
+            if i*3+j < len(keyboards):
+                keyboard[-1].append(keyboards[i*3+j])
     if msg == "":
         msg = "No papers yet"
     return msg, InlineKeyboardMarkup(keyboard)
