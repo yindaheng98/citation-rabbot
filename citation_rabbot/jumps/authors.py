@@ -25,7 +25,7 @@ def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
 def authors_results2message(res: List, args: object):
     msg = ""
     paper_args = reconstruct_paper_args(args)
-    keyboard = []
+    keyboards = []
     for i, (node, papers) in enumerate(res[0]):
         name = node['name']
         msg += f"{i+1}. {papers} papers: {name}\n"
@@ -35,13 +35,21 @@ def authors_results2message(res: List, args: object):
         elif "authorId" in node:
             k, v = "authorId", node["authorId"]
         if k is not None:
-            keyboard.append([
+            keyboards.append(
                 InlineKeyboardButton(
                     f"{i+1}'s Papers",
-                    switch_inline_query_current_chat=f"/author_papers {paper_args} {k} {v}"),
-            ])
+                    switch_inline_query_current_chat=f"/author_papers {paper_args} {k} {v}"
+                )
+            )
     if msg == "":
         msg = "No authors yet"
+    N = 3
+    keyboard = []
+    for i in range(len(keyboards) // N + 1):
+        keyboard.append([])
+        for j in range(N):
+            if i*3+j < len(keyboards):
+                keyboard[-1].append(keyboards[i*3+j])
     return msg, InlineKeyboardMarkup(keyboard)
 
 
