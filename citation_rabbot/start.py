@@ -2,7 +2,7 @@ from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def start_message2querys(_) -> List[Tuple[str, Dict]]:
+def start_args2querys(_) -> List[Tuple[str, Dict]]:
     return [
         ("MATCH ()-[r]->() RETURN type(r), COUNT(*)", {}),
         ("MATCH (n) RETURN labels(n), COUNT(n)", {})

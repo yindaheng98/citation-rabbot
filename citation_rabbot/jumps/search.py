@@ -13,5 +13,10 @@ def search_by_title_args2querys(args: object) -> List[Tuple[str, Dict]]:
     )]
 
 
-search_by_title_jump = ("search_by_title", add_arguments_papers(ArgumentParser()), search_by_title_args2querys,
-                        papers_results2message, "Search papers by keywords in title")
+search_by_title_jump = (
+    "search_by_title",
+    add_arguments_papers(ArgumentParser()),
+    search_by_title_args2querys,
+    papers_results2message,
+    "Search papers by keywords in title"
+)
