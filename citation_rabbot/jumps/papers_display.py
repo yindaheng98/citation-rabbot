@@ -18,7 +18,10 @@ def papers_results2message(res: List, args: object):
     keyboards = []
     for i, (paper, journal, cited) in enumerate(res[0]):
         title = paper['title']
-        info = f"{journal['dblp_name']} (CCF {journal['ccf']}), {paper['date'] if 'date' in paper else paper['year']}"
+        journal_info = "not published"
+        if journal:
+            journal_info = f"{journal['dblp_name']} (CCF {journal['ccf']})"
+        info = f"{journal_info}, {paper['date'] if 'date' in paper else paper['year']}"
         if "doi" in paper:
             msg += f'<b>{i+1}.</b> <a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {cited} citations\n'
         else:

@@ -16,7 +16,8 @@ def author_papers_args2querys(args: object) -> List[Tuple[str, Dict]]:
     author_k, author_v = args.key, args.value
     return [(
         f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE a.{author_k}=$value "
-        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": author_v, **values}
     )]
@@ -35,7 +36,8 @@ def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
     paper_k, paper_v = args.key, args.value
     return [(
         f"MATCH (p:Publication)<-[:CITE]-(a:Publication) WHERE a.{paper_k}=$value "
-        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
     )]
@@ -46,7 +48,8 @@ def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
     paper_k, paper_v = args.key, args.value
     return [(
         f"MATCH (p:Publication)-[:CITE]->(a:Publication) WHERE a.{paper_k}=$value "
-        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
     )]
