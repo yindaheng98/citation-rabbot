@@ -5,12 +5,12 @@ from telegram.ext import Application, ApplicationBuilder
 from .arg import add_argument_jump, parse_args_jump
 from .rabbot import Rabbot
 from .start import start_args2querys, gen_start_results2message
-from .jumps import paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump, paper_detail_jump
+from .jumps import author_papers_jump, citations_jump, references_jump, search_by_title_jump, paper_detail_jump
 default_jumps = [
-    search_by_title_jump, author_papers_jump, citations_jump, references_jump, paper_authors_jump, paper_detail_jump
+    search_by_title_jump, author_papers_jump, citations_jump, references_jump, paper_detail_jump
 ]
 default_jumps_name = [
-    "start_jump", "paper_authors_jump", "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump", "paper_detail_jump"
+    "start_jump", "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump", "paper_detail_jump"
 ]
 defaults_desc = "".join([" -j "+name for name in default_jumps_name])
 logging.basicConfig(
