@@ -4,39 +4,6 @@ from typing import Tuple, Dict, List
 from .args import add_arguments_papers, parse_args_papers
 
 
-def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    splited = []
-    if len(splited) <= 0:
-        return
-    paper_k, paper_v = splited[0]
-    return [(
-        "MATCH (a:Person)-[:WRITE]->(p:Publication {%s:$value}) "
-        "MATCH (a:Person)-[:WRITE]->(c:Publication) "
-        "RETURN a, count(c) AS ct ORDER BY ct DESC" % paper_k,
-        {"value": paper_v}
-    )]
-
-
-def authors_results2message(res: List, args: object):
-    msg = ""
-    keyboard = []
-    for i, (node, papers) in enumerate(res[0]):
-        name = node['name']
-        msg += f"{i+1}. {papers} papers: {name}\n"
-        k, v = None, None
-        if "dblp_id" in node:
-            k, v = "dblp_id", node["dblp_id"]
-        elif "authorId" in node:
-            k, v = "authorId", node["authorId"]
-        if k is not None:
-            keyboard.append([
-                InlineKeyboardButton(f"{i+1}'s Papers", switch_inline_query_current_chat=f"/author_papers {k}:{v}"),
-            ])
-    if msg == "":
-        msg = "No authors yet"
-    return msg, InlineKeyboardMarkup(keyboard)
-
-
 author_papers_parser = ArgumentParser()
 author_papers_parser.add_argument('key', metavar='key', type=str,
                                   help='Key and value to identify the author')
@@ -112,7 +79,6 @@ def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
     )]
 
 
-paper_authors_jump = ("paper_authors", paper_authors_args2querys, authors_results2message, None)
 author_papers_jump = ("author_papers", author_papers_parser, author_papers_args2querys, papers_results2message, None)
 references_jump = ("references", papers_parser, references_args2querys, papers_results2message, None)
 citations_jump = ("citations", papers_parser, citations_args2querys, papers_results2message, None)

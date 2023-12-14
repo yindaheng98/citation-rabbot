@@ -7,7 +7,7 @@ from .rabbot import Rabbot
 from .start import start_args2querys, gen_start_results2message
 from .jumps import paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
 default_jumps = [
-    search_by_title_jump, author_papers_jump, citations_jump, references_jump, # paper_authors_jump
+    search_by_title_jump, author_papers_jump, citations_jump, references_jump, paper_authors_jump
 ]
 default_jumps_name = [
     "start_jump", "paper_authors_jump", "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump"
@@ -30,7 +30,8 @@ args = parser.parse_args()
 jump_list = parse_args_jump(parser)
 
 # Parse jump list
-jump_dict = {name: (parser, message2query, result2message) for name, parser, message2query, result2message, _ in jump_list}
+jump_dict = {name: (parser, message2query, result2message)
+             for name, parser, message2query, result2message, _ in jump_list}
 desc_dict = {name: desc for name, _, _, _, desc in jump_list if desc}
 desc_order = [name for name, _, _, _, desc in jump_list if desc]
 # Add default jumps
