@@ -15,7 +15,7 @@ def gen_start_results2message(names, desc_dict):
         for name in names
     ])
 
-    def start_results2message(res: List):
+    def start_results2message(res: List, _):
         msg = "I'm jumping! Here is the places I'm jumping:\n"
         edge_counts, node_counts = res
         msg += "This place has lots of nodes:\n"

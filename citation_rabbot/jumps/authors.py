@@ -1,12 +1,15 @@
 from argparse import ArgumentParser
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from typing import Tuple, Dict, List
+from .papers_args import add_arguments_papers
+from .papers_display import reconstruct_paper_args
 
 authors_parser = ArgumentParser()
 authors_parser.add_argument('key', metavar='key', type=str,
                             help='Key and value to identify the paper')
 authors_parser.add_argument('value', metavar='value', type=str,
                             help='Key and value to identify the paper')
+authors_parser = add_arguments_papers(authors_parser)
 
 
 def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
@@ -21,6 +24,7 @@ def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
 
 def authors_results2message(res: List, args: object):
     msg = ""
+    paper_args = reconstruct_paper_args(args)
     keyboard = []
     for i, (node, papers) in enumerate(res[0]):
         name = node['name']
@@ -32,7 +36,9 @@ def authors_results2message(res: List, args: object):
             k, v = "authorId", node["authorId"]
         if k is not None:
             keyboard.append([
-                InlineKeyboardButton(f"{i+1}'s Papers", switch_inline_query_current_chat=f"/author_papers {k}:{v}"),
+                InlineKeyboardButton(
+                    f"{i+1}'s Papers",
+                    switch_inline_query_current_chat=f"/author_papers {paper_args} {k} {v}"),
             ])
     if msg == "":
         msg = "No authors yet"
