@@ -14,12 +14,12 @@ def authors_parser_add_arguments(authors_parser):
 
 
 def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    author_k, author_v = args.key, args.value
+    paper_k, paper_v = args.key, args.value
     return [(
-        f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{author_k}=$value "
+        f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{paper_k}=$value "
         "MATCH (a:Person)-[:WRITE]->(c:Publication) "
         "RETURN a, count(c) AS citation ORDER BY citation DESC",
-        {"value": author_v}
+        {"value": paper_v}
     )]
 
 

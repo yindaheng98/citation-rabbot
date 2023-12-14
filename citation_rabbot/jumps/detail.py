@@ -14,13 +14,17 @@ def paper_detail_parser_add_arguments(detail_parser):
 
 def paper_detail_args2querys(args: object) -> List[Tuple[str, Dict]]:
     paper_k, paper_v = args.key, args.value
-    return [(
-        f"MATCH (p:Publication) WHERE p.{paper_k}=$value "
-        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:CITE]->(r:Publication) "
-        f"MATCH (a:Person)-[:WRITE]->(p:Publication)-[:PUBLISH]->(j:Journal) "
-        "RETURN a, p, j, count(c), count(r) AS citation ORDER BY citation DESC",
-        {"value": paper_v}
-    )]
+    return [
+        (f"MATCH (p:Publication) WHERE p.{paper_k}=$value RETURN p", {"value": paper_v}),
+        (f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE p.{paper_k}=$value RETURN j", {"value": paper_v}),
+        (f"MATCH (c:Publication)-[:CITE]->(p:Publication) WHERE p.{paper_k}=$value "
+            "RETURN count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
+        (f"MATCH (r:Publication)<-[:CITE]-(p:Publication) WHERE p.{paper_k}=$value "
+            "RETURN count(r) AS citation ORDER BY citation DESC", {"value": paper_v}),
+        (f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{paper_k}=$value "
+            "MATCH (a:Person)-[:WRITE]->(c:Publication) "
+            "RETURN a, count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
+    ]
 
 
 def papers_detail_results2message(res: List, args: object):
@@ -38,23 +42,24 @@ def papers_detail_results2message(res: List, args: object):
             f"Citations",
             switch_inline_query_current_chat=f'/citations {paper_args} "{paper_k}" "{paper_v}"'),
     ]]
-    authors = []
-    papers = []
-    for author, paper, journal, cited, refed in res[0]:
+    papers, journals, citations, references, authors = res
+    author_msgs = []
+    for author, n_papers in authors:
         author_msg = f'{author["name"]}'
-        if "dblp_id" in author:
-            author_msg = f'<a href="https://doi.org/pid/{author["dblp_id"]}.html">{author["name"]}</a>'
-        authors.append(author_msg)
-
+        if "dblp_pid" in author:
+            author_msg = f'<a href="https://dblp.org/pid/{author["dblp_pid"]}.html">{author["name"]}</a>'
+        author_msgs.append(author_msg)
+    paper_msgs = []
+    for (paper,), (journal,), (cited,), (refed,) in zip(papers, journals, citations, references):
         title = paper['title']
-        info = f"{journal['dblp_name']} (CCF {journal['ccf']}), {paper['date'] if 'date' in paper else paper['year']}"
+        info = f"<i>{journal['dblp_name']}</i> (CCF {journal['ccf']}), {paper['date'] if 'date' in paper else paper['year']}"
         paper_msg = f"{title}, {info}, {refed} references, {cited} citations\n"
         if "doi" in paper:
             paper_msg = f'<a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {refed} references, {cited} citations\n'
-        if paper_msg not in papers:
-            papers.append(paper_msg)
+        if paper_msg not in paper_msgs:
+            paper_msgs.append(paper_msg)
 
-    msg = "\n".join(papers) + "\n<b>Authors: </b>" +", ".join(authors)
+    msg = "\n".join(paper_msgs) + "\n<b>Authors: </b>" + ", ".join(author_msgs)
     return msg, InlineKeyboardMarkup(keyboards)
 
 
