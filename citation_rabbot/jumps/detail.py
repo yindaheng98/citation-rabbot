@@ -15,15 +15,14 @@ def paper_detail_parser_add_arguments(detail_parser):
 def paper_detail_args2querys(args: object) -> List[Tuple[str, Dict]]:
     paper_k, paper_v = args.key, args.value
     return [
-        (f"MATCH (p:Publication) WHERE p.{paper_k}=$value RETURN p", {"value": paper_v}),
-        (f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE p.{paper_k}=$value RETURN j", {"value": paper_v}),
-        (f"MATCH (c:Publication)-[:CITE]->(p:Publication) WHERE p.{paper_k}=$value "
-            "RETURN count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
-        (f"MATCH (r:Publication)<-[:CITE]-(p:Publication) WHERE p.{paper_k}=$value "
-            "RETURN count(r) AS citation ORDER BY citation DESC", {"value": paper_v}),
+        (f"MATCH (p:Publication) WHERE p.{paper_k}=$value "
+         "OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) "
+         "OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
+         "OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
+         "RETURN p, j, count(c), count(r)", {"value": paper_v}),
         (f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{paper_k}=$value "
-            "MATCH (a:Person)-[:WRITE]->(c:Publication) "
-            "RETURN a, count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
+         "OPTIONAL MATCH (a:Person)-[:WRITE]->(c:Publication) "
+         "RETURN a, count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
     ]
 
 
@@ -40,7 +39,7 @@ def papers_detail_results2message(res: List, args: object):
             switch_inline_query_current_chat=f'/citations {paper_args} "{paper_k}" "{paper_v}"'),
     ]]
 
-    papers, journals, citations, references, authors = res
+    papers, authors = res
 
     author_details, author_keyboards = [], []
     for author, n_papers in authors:
@@ -69,16 +68,19 @@ def papers_detail_results2message(res: List, args: object):
     authors_msg = "\n<b>Authors: </b>\n " + "\n ".join(author_details)
 
     paper_msgs = []
-    for (paper,), (journal,), (cited,), (refed,) in zip(papers, journals, citations, references):
+    for paper, journal, cited, refed in papers:
         title = paper['title']
-        info = f"<i>{journal['dblp_name']}</i> (CCF {journal['ccf']}), {paper['date'] if 'date' in paper else paper['year']}"
+        journal_info = "not published"
+        if journal:
+            journal_info = f"{journal['dblp_name']} (CCF {journal['ccf']})"
+        info = f"{journal_info}, {paper['date'] if 'date' in paper else paper['year']}"
         paper_msg = f"{title}, {info}, {refed} references, {cited} citations\n"
         if "doi" in paper:
             paper_msg = f'<a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {refed} references, {cited} citations\n'
         if paper_msg not in paper_msgs:
             paper_msgs.append(paper_msg)
     papers_msg = "\n".join(paper_msgs)
-    msg = papers_msg + "\n" + authors_msg
+    msg = papers_msg + authors_msg
     return msg, InlineKeyboardMarkup(keyboards)
 
 
