@@ -1,10 +1,11 @@
+from argparse import ArgumentParser
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from typing import Tuple, Dict, List
-import re
+from .args import add_arguments_papers, parse_args_papers
 
 
-def paper_authors_message2querys(msg: str) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
+def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
+    splited = []
     if len(splited) <= 0:
         return
     paper_k, paper_v = splited[0]
@@ -16,7 +17,7 @@ def paper_authors_message2querys(msg: str) -> List[Tuple[str, Dict]]:
     )]
 
 
-def authors_results2message(res: List):
+def authors_results2message(res: List, args: object):
     msg = ""
     keyboard = []
     for i, (node, papers) in enumerate(res[0]):
@@ -36,16 +37,22 @@ def authors_results2message(res: List):
     return msg, InlineKeyboardMarkup(keyboard)
 
 
-def author_papers_message2querys(msg: str) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
-    if len(splited) <= 0:
-        return
-    paper_k, paper_v = splited[0]
+author_papers_parser = ArgumentParser()
+author_papers_parser.add_argument('key', metavar='key', type=str,
+                                  help='Key and value to identify the author')
+author_papers_parser.add_argument('value', metavar='value', type=str,
+                                  help='Key and value to identify the author')
+author_papers_parser = add_arguments_papers(author_papers_parser)
+
+
+def author_papers_args2querys(args: object) -> List[Tuple[str, Dict]]:
+    where, orderby, limits, values = parse_args_papers(args)
+    author_k, author_v = args.key, args.value
     return [(
-        "MATCH (a:Person {%s:$value})-[:WRITE]->(p:Publication) "
-        "MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) "
-        "RETURN p, j, COUNT(c) AS ct ORDER BY ct DESC" % paper_k,
-        {"value": paper_v}
+        f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE a.{author_k}=$value "
+        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
+        {"value": author_v, **values}
     )]
 
 
@@ -75,33 +82,37 @@ def papers_results2message(res: List, args: object):
     return msg, InlineKeyboardMarkup(keyboard)
 
 
-def references_message2querys(msg: str) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
-    if len(splited) <= 0:
-        return
-    paper_k, paper_v = splited[0]
+papers_parser = ArgumentParser()
+papers_parser.add_argument('key', metavar='key', type=str,
+                           help='Key and value to identify the paper')
+papers_parser.add_argument('value', metavar='value', type=str,
+                           help='Key and value to identify the paper')
+papers_parser = add_arguments_papers(papers_parser)
+
+
+def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
+    where, orderby, limits, values = parse_args_papers(args)
+    paper_k, paper_v = args.key, args.value
     return [(
-        "MATCH (a:Publication)<-[:CITE]-(:Publication {%s:$value}) "
-        "MATCH (c:Publication)-[:CITE]->(a:Publication)-[:PUBLISH]->(j:Journal) "
-        "RETURN a, j, count(c) AS ct ORDER BY ct DESC" % paper_k,
-        {"value": paper_v}
+        f"MATCH (p:Publication)<-[:CITE]-(a:Publication) WHERE a.{paper_k}=$value "
+        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
+        {"value": paper_v, **values}
     )]
 
 
-def citations_message2querys(msg: str) -> List[Tuple[str, Dict]]:
-    splited = re.findall(r"^/[A-Za-z_]+ +([A-Za-z_]+):(\S+)$", msg)
-    if len(splited) <= 0:
-        return
-    paper_k, paper_v = splited[0]
+def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
+    where, orderby, limits, values = parse_args_papers(args)
+    paper_k, paper_v = args.key, args.value
     return [(
-        "MATCH (a:Publication)-[:CITE]->(:Publication {%s:$value}) "
-        "MATCH (c:Publication)-[:CITE]->(a:Publication)-[:PUBLISH]->(j:Journal) "
-        "RETURN a, j, count(c) AS ct ORDER BY ct DESC" % paper_k,
-        {"value": paper_v}
+        f"MATCH (p:Publication)-[:CITE]->(a:Publication) WHERE a.{paper_k}=$value "
+        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
+        {"value": paper_v, **values}
     )]
 
 
-paper_authors_jump = ("paper_authors", paper_authors_message2querys, authors_results2message, None)
-author_papers_jump = ("author_papers", author_papers_message2querys, papers_results2message, None)
-references_jump = ("references", references_message2querys, papers_results2message, None)
-citations_jump = ("citations", citations_message2querys, papers_results2message, None)
+paper_authors_jump = ("paper_authors", paper_authors_args2querys, authors_results2message, None)
+author_papers_jump = ("author_papers", author_papers_parser, author_papers_args2querys, papers_results2message, None)
+references_jump = ("references", papers_parser, references_args2querys, papers_results2message, None)
+citations_jump = ("citations", papers_parser, citations_args2querys, papers_results2message, None)
