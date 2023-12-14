@@ -20,18 +20,25 @@ class Rabbot:
         self.bot_name = me.name
 
     def add_jump(self, name: str,
-                 parser: ArgumentParser,
+                 parser_add_arguments: Callable[[ArgumentParser], ArgumentParser],
                  args2querys: Callable[[object], List[Tuple[str, Dict]]],
                  results2message: Callable[[List, object], Tuple[str, InlineKeyboardMarkup]]):
+        parser = ArgumentParser(add_help=False, exit_on_error=False)
+        parser.add_argument('-h', '--help', action='store_true', help='Show help message.')
+        if parser_add_arguments:
+            parser = parser_add_arguments(parser)
+
         async def handler(text: str, update: Update, context: ContextTypes.DEFAULT_TYPE):
             lst_args = []
             str_args = re.findall(r"^/[A-Za-z_]+ *(.*)$", text)
             obj_args = None
             if len(str_args) > 0:
                 lst_args = shlex.split(str_args[0])
-            if parser:
-                parser.exit_on_error = False
-                obj_args = parser.parse_args(lst_args)
+            if '-h' in lst_args or '--help' in lst_args:
+                message = re.sub(r"^usage: __main__.py", f"usage: /{name}", parser.format_help())
+                await update.message.reply_text(text=message, reply_to_message_id=update.message.id)
+                return
+            obj_args = parser.parse_args(lst_args)
             querys = args2querys(obj_args)
             if not querys or len(querys) <= 0:
                 return

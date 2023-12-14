@@ -4,12 +4,13 @@ from typing import Tuple, Dict, List
 from .papers_args import add_arguments_papers
 from .papers_display import reconstruct_paper_args
 
-authors_parser = ArgumentParser()
-authors_parser.add_argument('key', metavar='key', type=str,
-                            help='Key and value to identify the paper')
-authors_parser.add_argument('value', metavar='value', type=str,
-                            help='Key and value to identify the paper')
-authors_parser = add_arguments_papers(authors_parser)
+
+def authors_parser_add_arguments(authors_parser):
+    authors_parser.add_argument('key', metavar='key', type=str,
+                                help='Key and value to identify the paper')
+    authors_parser.add_argument('value', metavar='value', type=str,
+                                help='Key and value to identify the paper')
+    return add_arguments_papers(authors_parser)
 
 
 def paper_authors_args2querys(args: object) -> List[Tuple[str, Dict]]:
@@ -53,4 +54,10 @@ def authors_results2message(res: List, args: object):
     return msg, InlineKeyboardMarkup(keyboard)
 
 
-paper_authors_jump = ("paper_authors", authors_parser, paper_authors_args2querys, authors_results2message, None)
+paper_authors_jump = (
+    "paper_authors",
+    authors_parser_add_arguments,
+    paper_authors_args2querys,
+    authors_results2message,
+    None
+)
