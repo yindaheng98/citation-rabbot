@@ -33,22 +33,41 @@ def papers_detail_results2message(res: List, args: object):
     paper_k, paper_v = args.key, args.value
     keyboards = [[
         InlineKeyboardButton(
-            f"Authors",
-            switch_inline_query_current_chat=f'/paper_authors {paper_args} "{paper_k}" "{paper_v}"'),
-        InlineKeyboardButton(
             f"References",
             switch_inline_query_current_chat=f'/references {paper_args} "{paper_k}" "{paper_v}"'),
         InlineKeyboardButton(
             f"Citations",
             switch_inline_query_current_chat=f'/citations {paper_args} "{paper_k}" "{paper_v}"'),
     ]]
+
     papers, journals, citations, references, authors = res
-    author_msgs = []
+
+    author_details, author_keyboards = [], []
     for author, n_papers in authors:
         author_msg = f'{author["name"]}'
-        if "dblp_pid" in author:
+        k, v = None, None
+        if "authorId" in author:
+            k, v = "authorId", author["authorId"]
+            author_msg = f'<a href="https://www.semanticscholar.org/author/{author["authorId"]}">{author["name"]}</a>'
+        elif "dblp_pid" in author:
+            k, v = "dblp_id", author["dblp_id"]
             author_msg = f'<a href="https://dblp.org/pid/{author["dblp_pid"]}.html">{author["name"]}</a>'
-        author_msgs.append(author_msg)
+        author_details.append(f"{author_msg} {n_papers} papers")
+        if k is not None:
+            author_keyboards.append(
+                InlineKeyboardButton(
+                    f"{author['name']}",
+                    switch_inline_query_current_chat=f'/author_papers {paper_args} "{k}" "{v}"'
+                )
+            )
+    N = 3
+    for i in range(len(author_keyboards) // N + 1):
+        keyboards.append([])
+        for j in range(N):
+            if i*3+j < len(author_keyboards):
+                keyboards[-1].append(author_keyboards[i*3+j])
+    authors_msg = "\n<b>Authors: </b>\n " + "\n ".join(author_details)
+
     paper_msgs = []
     for (paper,), (journal,), (cited,), (refed,) in zip(papers, journals, citations, references):
         title = paper['title']
@@ -58,8 +77,8 @@ def papers_detail_results2message(res: List, args: object):
             paper_msg = f'<a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {refed} references, {cited} citations\n'
         if paper_msg not in paper_msgs:
             paper_msgs.append(paper_msg)
-
-    msg = "\n".join(paper_msgs) + "\n<b>Authors: </b>" + ", ".join(author_msgs)
+    papers_msg = "\n".join(paper_msgs)
+    msg = papers_msg + "\n" + authors_msg
     return msg, InlineKeyboardMarkup(keyboards)
 
 
