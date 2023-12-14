@@ -1,5 +1,7 @@
 import asyncio
 import re
+import shlex
+from argparse import ArgumentParser
 from typing import Callable, Tuple, Dict, List
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup
@@ -17,9 +19,20 @@ class Rabbot:
         me = await self.app.bot.get_me()
         self.bot_name = me.name
 
-    def add_jump(self, name: str, message2querys: Callable[[str], List[Tuple[str, Dict]]], results2message: Callable[[List], Tuple[str, InlineKeyboardMarkup]]):
+    def add_jump(self, name: str,
+                 parser: ArgumentParser,
+                 args2querys: Callable[[str], List[Tuple[str, Dict]]],
+                 results2message: Callable[[List], Tuple[str, InlineKeyboardMarkup]]):
         async def handler(text: str, update: Update, context: ContextTypes.DEFAULT_TYPE):
-            querys = message2querys(text)
+            lst_args = []
+            str_args = re.findall(r"^/[A-Za-z_]+ *(.*)$", text)
+            obj_args = None
+            if len(str_args) > 0:
+                lst_args = shlex.split(str_args[0])
+            if parser:
+                parser.exit_on_error = False
+                obj_args = parser.parse_args(lst_args)
+            querys = args2querys(obj_args)
             if not querys or len(querys) <= 0:
                 return
             results = []

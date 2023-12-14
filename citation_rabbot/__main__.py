@@ -7,7 +7,7 @@ from .rabbot import Rabbot
 from .start import start_message2querys, gen_start_results2message
 from .jumps import paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
 default_jumps = [
-    paper_authors_jump, author_papers_jump, citations_jump, references_jump, search_by_title_jump
+    search_by_title_jump, # paper_authors_jump, author_papers_jump, citations_jump, references_jump
 ]
 default_jumps_name = [
     "start_jump", "paper_authors_jump", "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump"
@@ -29,16 +29,17 @@ add_argument_jump(parser, defaults_desc=defaults_desc)
 args = parser.parse_args()
 jump_list = parse_args_jump(parser)
 
-
-jump_dict = {name: (message2query, result2message) for name, message2query, result2message, _ in jump_list}
-desc_dict = {name: desc for name, _, _, desc in jump_list if desc}
-desc_name = [name for name, _, _, desc in jump_list if desc]
-for name, message2query, result2message, desc in default_jumps:
+# Parse jump list
+jump_dict = {name: (parser, message2query, result2message) for name, parser, message2query, result2message, _ in jump_list}
+desc_dict = {name: desc for name, _, _, _, desc in jump_list if desc}
+desc_order = [name for name, _, _, _, desc in jump_list if desc]
+# Add default jumps
+for name, parser, message2query, result2message, desc in default_jumps:
     if name not in jump_dict:
-        jump_dict[name] = (message2query, result2message)
+        jump_dict[name] = (parser, message2query, result2message)
     if desc:
         desc_dict[name] = desc
-        desc_name.append(name)
+        desc_order.append(name)
 
 
 async def post_init(application: Application):
@@ -48,7 +49,7 @@ application = ApplicationBuilder().token(args.token).post_init(post_init).build(
 with GraphDatabase.driver(args.uri, auth=args.auth) as driver:
     with driver.session() as session:
         rabbot = Rabbot(app=application, session=session)
-        for name, (message2query, result2message) in jump_dict.items():
-            rabbot.add_jump(name, message2query, result2message)
-        rabbot.add_jump('start', start_message2querys, gen_start_results2message(desc_name, desc_dict))
+        for name, (parser, message2query, result2message) in jump_dict.items():
+            rabbot.add_jump(name, parser, message2query, result2message)
+        rabbot.add_jump('start', None, start_message2querys, gen_start_results2message(desc_order, desc_dict))
         application.run_polling()
