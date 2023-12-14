@@ -41,7 +41,7 @@ def parse_args_papers(args: object):
         orderby = 'p.year DESC, COALESCE(p.date, date("1970-01-01")) DESC, citation DESC'
 
     limits = "$limit"
-    where = 'p.year >= $year'
+    pwhere = 'p.year >= $year'
     values = dict(year=args.year, limit=args.limit)
 
     ki, k_or, v_or = 0, [], {}
@@ -56,12 +56,11 @@ def parse_args_papers(args: object):
         k_or.append(f"({' and '.join(k_and)})")
         v_or = {**v_or, **v_and}
     if ki > 0:
-        where += " AND " + f"({' OR '.join(k_or)})"
+        pwhere += " AND " + f"({' OR '.join(k_or)})"
         values = {**values, **v_or}
 
-    where += (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
-    jmatch = False
+    pwhere += (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
+    jwhere = ''
     if len(args.where_journal) > 0:
-        where += " AND " + ' AND '.join(['j.' + w for w in args.where_journal])
-        jmatch = True
-    return where, jmatch, orderby, limits, values
+        jwhere = ' AND '.join(['j.' + w for w in args.where_journal])
+    return pwhere, jwhere, orderby, limits, values

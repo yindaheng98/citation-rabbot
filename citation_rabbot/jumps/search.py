@@ -4,9 +4,11 @@ from .papers_args import add_arguments_papers, parse_args_papers
 
 
 def search_by_title_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    where, jmatch, orderby, limits, values = parse_args_papers(args)
+    pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
     return [(
-        f"MATCH (c:Publication)-[:CITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"MATCH (p:Publication) WHERE {pwhere} " +
+        ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
+        f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         values
     )]
