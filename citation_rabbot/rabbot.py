@@ -21,8 +21,8 @@ class Rabbot:
 
     def add_jump(self, name: str,
                  parser: ArgumentParser,
-                 args2querys: Callable[[str], List[Tuple[str, Dict]]],
-                 results2message: Callable[[List], Tuple[str, InlineKeyboardMarkup]]):
+                 args2querys: Callable[[object], List[Tuple[str, Dict]]],
+                 results2message: Callable[[List, object], Tuple[str, InlineKeyboardMarkup]]):
         async def handler(text: str, update: Update, context: ContextTypes.DEFAULT_TYPE):
             lst_args = []
             str_args = re.findall(r"^/[A-Za-z_]+ *(.*)$", text)
@@ -38,7 +38,7 @@ class Rabbot:
             results = []
             for query, kwargs in querys:
                 results.append(self.session.execute_read(lambda tx: tx.run(query, **kwargs).values()))
-            message, reply_markup = results2message(results)
+            message, reply_markup = results2message(results, obj_args)
             await update.message.reply_text(text=message, reply_to_message_id=update.message.id, reply_markup=reply_markup, parse_mode=ParseMode.HTML)
         command_handler = CommandHandler(name, lambda update, context: handler(update.message.text, update, context))
         self.app.add_handler(command_handler)

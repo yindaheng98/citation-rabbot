@@ -49,7 +49,7 @@ def author_papers_message2querys(msg: str) -> List[Tuple[str, Dict]]:
     )]
 
 
-def papers_results2message(res: List):
+def papers_results2message(res: List, args: object):
     msg = ""
     keyboard = []
     for i, (paper, journal, cited) in enumerate(res[0]):
