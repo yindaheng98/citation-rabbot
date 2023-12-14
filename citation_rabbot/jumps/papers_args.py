@@ -23,8 +23,12 @@ def add_arguments_papers(parser: ArgumentParser):
                         "-k 'word1' -k 'word2' means 'word1 or word2'. "
                         "e.g. -k 'video edge' -k 'super-resolution' means search for those papers "
                         "whose title includes both 'video' and 'edge' or includes 'super-resolution'")
-    parser.add_argument("-v", "--key_value", action='append', default=[],
-                        help="Specify key-value rules for searching in the database. e.g. -v j.ccf:A will only return those CCF A papers")
+    parser.add_argument("-p", "--where_paper", action='append', default=[],
+                        help="Specify rules for match paper in the database. "
+                        "e.g. -p date>=date('2023-01-01') will only return those papers published after Jan 1, 2023")
+    parser.add_argument("-j", "--where_journal", action='append', default=[],
+                        help="Specify rules for match journal in the database. "
+                        "e.g. -j ccf='A' will only return those CCF A papers")
     parser.add_argument("-l", "--limit", type=int, help="Limit the length of results. Maximum 20", default=20)
     return parser
 
@@ -54,18 +58,10 @@ def parse_args_papers(args: object):
     if ki > 0:
         where += " AND " + f"({' OR '.join(k_or)})"
         values = {**values, **v_or}
-    
-    ki, keys, kvalues = 0, [], {}
-    for key_value in args.key_value:
-        kv = key_value.split(":", 1)
-        if len(kv) != 2 or not kv[0]:
-            continue
-        ki += 1
-        key, value = kv
-        keys.append(f"{key}=$value{ki}")
-        kvalues[f"value{ki}"] = value
-    if ki > 0:
-        where += " AND " + f"({' AND '.join(keys)})"
-        values = {**values, **kvalues}
 
-    return where, orderby, limits, values
+    where += (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
+    jmatch = False
+    if len(args.where_journal) > 0:
+        where += " AND " + ' AND '.join(['j.' + w for w in args.where_journal])
+        jmatch = True
+    return where, jmatch, orderby, limits, values

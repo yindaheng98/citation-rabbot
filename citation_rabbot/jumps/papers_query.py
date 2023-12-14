@@ -12,11 +12,11 @@ def author_papers_parser_add_arguments(author_papers_parser):
 
 
 def author_papers_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    where, orderby, limits, values = parse_args_papers(args)
+    where, jmatch, orderby, limits, values = parse_args_papers(args)
     author_k, author_v = args.key, args.value
     return [(
         f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE a.{author_k}=$value "
-        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"{'OPTIONAL' if not jmatch else ''} MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": author_v, **values}
@@ -32,11 +32,11 @@ def papers_parser_add_arguments(papers_parser):
 
 
 def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    where, orderby, limits, values = parse_args_papers(args)
+    where, jmatch, orderby, limits, values = parse_args_papers(args)
     paper_k, paper_v = args.key, args.value
     return [(
         f"MATCH (p:Publication)<-[:CITE]-(a:Publication) WHERE a.{paper_k}=$value "
-        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"{'OPTIONAL' if not jmatch else ''} MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
@@ -44,11 +44,11 @@ def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
 
 
 def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    where, orderby, limits, values = parse_args_papers(args)
+    where, jmatch, orderby, limits, values = parse_args_papers(args)
     paper_k, paper_v = args.key, args.value
     return [(
         f"MATCH (p:Publication)-[:CITE]->(a:Publication) WHERE a.{paper_k}=$value "
-        f"OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
+        f"{'OPTIONAL' if not jmatch else ''} MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {where} "
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
