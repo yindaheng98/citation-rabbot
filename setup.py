@@ -13,7 +13,7 @@ package_dir = {
 
 setup(
     name='citation-rabbot',
-    version='3.8.2',
+    version='3.9',
     author='yindaheng98',
     author_email='yindaheng98@gmail.com',
     url='https://github.com/yindaheng98/citation-rabbot',

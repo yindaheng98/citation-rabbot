@@ -1,6 +1,6 @@
 from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from .papers_args import add_arguments_papers
+from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import reconstruct_paper_args
 
 
@@ -13,6 +13,7 @@ def paper_detail_parser_add_arguments(detail_parser):
 
 
 def paper_detail_args2querys(args: object) -> List[Tuple[str, Dict]]:
+    pwhere, jwhere, _, _, values = parse_args_papers(args)
     paper_k, paper_v = args.key, args.value
     return [
         (f"MATCH (p:Publication) WHERE p.{paper_k}=$value "
@@ -20,9 +21,11 @@ def paper_detail_args2querys(args: object) -> List[Tuple[str, Dict]]:
          "OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
          "OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
          "RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference", {"value": paper_v}),
-        (f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{paper_k}=$value "
-         "OPTIONAL MATCH (a:Person)-[:WRITE]->(c:Publication) "
-         "RETURN a, count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),
+        (f"MATCH (b:Person)-[:WRITE]->(a:Publication) WHERE a.{paper_k}=$value " +
+         (f"OPTIONAL MATCH (b:Person)-[:WRITE]->(p:Publication) WHERE {pwhere} "
+          if jwhere == '' else
+          f"OPTIONAL MATCH (b:Person)-[:WRITE]->(p:Publication)-[:PUBLISH]->(j:Journal) WHERE {pwhere} AND {jwhere} ") +
+         "RETURN b, count(DISTINCT p) AS citation ORDER BY citation DESC", {"value": paper_v, **values}),
     ]
 
 
