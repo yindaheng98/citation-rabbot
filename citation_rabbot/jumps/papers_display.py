@@ -22,7 +22,7 @@ def papers_results2message(res: List, args: object):
         journal_info = "not published"
         if journal:
             journal_info = f"<i>{journal['dblp_name']}</i> (CCF {journal['ccf']})"
-        msg += f'<b>{i+1}.</b> '
+        msg += f'<b>P{i+1}.</b> '
         if "doi" in paper:
             msg += f'<a href="https://doi.org/{paper["doi"]}"><b>{title}</b></a>'
         else:
@@ -32,7 +32,7 @@ def papers_results2message(res: List, args: object):
 
         keyboards.append(
             InlineKeyboardButton(
-                f"{i+1}'s Detail",
+                f"P{i+1} Detail",
                 switch_inline_query_current_chat=f"/paper_detail {paper_args} title_hash {paper['title_hash']}")
         )
     N = 3
