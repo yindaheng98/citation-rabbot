@@ -9,7 +9,8 @@ def search_by_title_args2querys(args: object) -> List[Tuple[str, Dict]]:
         f"MATCH (p:Publication) WHERE {pwhere} " +
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
-        f"RETURN p, j, COUNT(c) AS citation ORDER BY {orderby} LIMIT {limits}",
+        f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
+        f"RETURN p, j, COUNT(c) AS citation, COUNT(r) AS reference ORDER BY {orderby} LIMIT {limits}",
         values
     )]
 

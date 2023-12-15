@@ -17,16 +17,16 @@ def papers_results2message(res: List, args: object):
     msg = ""
     paper_args = reconstruct_paper_args(args)
     keyboards = []
-    for i, (paper, journal, cited) in enumerate(res[0]):
+    for i, (paper, journal, n_cite, n_refs) in enumerate(res[0]):
         title = paper['title']
         journal_info = "not published"
         if journal:
             journal_info = f"{journal['dblp_name']} (CCF {journal['ccf']})"
         info = f"{journal_info}, {paper['date'] if 'date' in paper else paper['year']}"
         if "doi" in paper:
-            msg += f'<b>{i+1}.</b> <a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {cited} citations\n'
+            msg += f'<b>{i+1}.</b> <a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {n_refs} references, {n_cite} citations\n'
         else:
-            msg += f"<b>{i+1}.</b> {title}, {info}, {cited} citations\n"
+            msg += f"<b>{i+1}.</b> {title}, {info}, {n_refs} references, {n_cite} citations\n"
 
         keyboards.append(
             InlineKeyboardButton(
