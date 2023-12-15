@@ -47,10 +47,10 @@ def papers_detail_results2message(res: List, args: object):
         k, v = None, None
         if "authorId" in author:
             k, v = "authorId", author["authorId"]
-            author_msg = f'<a href="https://www.semanticscholar.org/author/{author["authorId"]}">{author["name"]}</a>'
+            author_msg = f'<a href="https://www.semanticscholar.org/author/{author["authorId"]}"><b>{author["name"]}</b></a>'
         elif "dblp_pid" in author:
             k, v = "dblp_id", author["dblp_id"]
-            author_msg = f'<a href="https://dblp.org/pid/{author["dblp_pid"]}.html">{author["name"]}</a>'
+            author_msg = f'<a href="https://dblp.org/pid/{author["dblp_pid"]}.html"><b>{author["name"]}</b></a>'
         author_details.append(f"{author_msg} {n_papers} papers")
         if k is not None:
             author_keyboards.append(
