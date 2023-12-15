@@ -68,15 +68,17 @@ def papers_detail_results2message(res: List, args: object):
     authors_msg = "\n<b>Authors: </b>\n " + "\n ".join(author_details)
 
     paper_msgs = []
-    for paper, journal, cited, refed in papers:
+    for paper, journal, n_cite, n_refs in papers:
         title = paper['title']
         journal_info = "not published"
         if journal:
-            journal_info = f"{journal['dblp_name']} (CCF {journal['ccf']})"
-        info = f"{journal_info}, {paper['date'] if 'date' in paper else paper['year']}"
-        paper_msg = f"{title}, {info}, {refed} references, {cited} citations\n"
+            journal_info = f"<i>{journal['dblp_name']}</i> (CCF {journal['ccf']})"
         if "doi" in paper:
-            paper_msg = f'<a href="https://doi.org/{paper["doi"]}">{title}</a>, {info}, {refed} references, {cited} citations\n'
+            paper_msg = f'<a href="https://doi.org/{paper["doi"]}"><b>{title}</b></a>'
+        else:
+            paper_msg = f"<b>{title}</b>"
+        paper_msg += f", {journal_info}, {paper['date'] if 'date' in paper else paper['year']}"
+        paper_msg += f', {n_refs} references, <b>{n_cite} citations</b>\n'
         if paper_msg not in paper_msgs:
             paper_msgs.append(paper_msg)
     papers_msg = "\n".join(paper_msgs)
