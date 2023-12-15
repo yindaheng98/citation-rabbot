@@ -19,7 +19,7 @@ def paper_detail_args2querys(args: object) -> List[Tuple[str, Dict]]:
          "OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) "
          "OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
          "OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
-         "RETURN p, j, count(c), count(r)", {"value": paper_v}),
+         "RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference", {"value": paper_v}),
         (f"MATCH (a:Person)-[:WRITE]->(p:Publication) WHERE p.{paper_k}=$value "
          "OPTIONAL MATCH (a:Person)-[:WRITE]->(c:Publication) "
          "RETURN a, count(c) AS citation ORDER BY citation DESC", {"value": paper_v}),

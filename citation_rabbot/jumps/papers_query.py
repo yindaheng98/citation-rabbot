@@ -20,7 +20,7 @@ def author_papers_args2querys(args: object) -> List[Tuple[str, Dict]]:
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
-        f"RETURN p, j, COUNT(c) AS citation, COUNT(r) AS reference ORDER BY {orderby} LIMIT {limits}",
+        f"RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference ORDER BY {orderby} LIMIT {limits}",
         {"value": author_v, **values}
     )]
 
@@ -42,7 +42,7 @@ def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
-        f"RETURN p, j, COUNT(c) AS citation, COUNT(r) AS reference ORDER BY {orderby} LIMIT {limits}",
+        f"RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
     )]
 
@@ -56,6 +56,6 @@ def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
-        f"RETURN p, j, COUNT(c) AS citation, COUNT(r) AS reference ORDER BY {orderby} LIMIT {limits}",
+        f"RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference ORDER BY {orderby} LIMIT {limits}",
         {"value": paper_v, **values}
     )]
