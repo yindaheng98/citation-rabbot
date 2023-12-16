@@ -20,7 +20,8 @@ logging.basicConfig(
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--auth", type=str, default=None, help=f'Auth to neo4j database.')
+parser.add_argument("--username", type=str, default=None, help=f'Auth username to neo4j database.')
+parser.add_argument("--password", type=str, default=None, help=f'Auth password to neo4j database.')
 parser.add_argument("--uri", type=str, required=True, help=f'URI to neo4j database.')
 parser.add_argument("--token", type=str, required=True, help=f'Telegram bot token.')
 add_argument_jump(parser, defaults_desc=defaults_desc)
@@ -47,7 +48,7 @@ async def post_init(application: Application):
     await application.bot.set_my_commands([('start', "Let's jump!")])
 application = ApplicationBuilder().token(args.token).post_init(post_init).build()
 
-with GraphDatabase.driver(args.uri, auth=args.auth) as driver:
+with GraphDatabase.driver(args.uri, auth=(args.username, args.password)) as driver:
     with driver.session() as session:
         rabbot = Rabbot(app=application, session=session)
         for name, (parser, message2query, result2message) in jump_dict.items():
