@@ -23,7 +23,9 @@ def papers_results2message(res: List, args: object):
         if journal:
             journal_info = f"<i>{journal['dblp_name']}</i> (CCF {journal['ccf']})"
         msg += f'<b>P{i+1}.</b> '
-        if "doi" in paper:
+        if "paperId" in paper:
+            msg += f'<a href="https://www.semanticscholar.org/paper/{paper["paperId"]}"><b>{title}</b></a>'
+        elif "doi" in paper:
             msg += f'<a href="https://doi.org/{paper["doi"]}"><b>{title}</b></a>'
         else:
             msg += f"<b>{title}</b>"
