@@ -34,7 +34,7 @@ class Rabbot:
             obj_args = None
             if len(str_args) > 0:
                 lst_args = shlex.split(str_args[0])
-            if '-h' in lst_args or '--help' in lst_args:
+            if (parser_add_arguments is not None and len(lst_args) <= 0) or '-h' in lst_args or '--help' in lst_args:
                 message = re.sub(r"^usage: __main__.py", f"usage: /{name}", parser.format_help())
                 await update.message.reply_text(text=message, reply_to_message_id=update.message.id)
                 return

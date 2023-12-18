@@ -11,7 +11,7 @@ def start_args2querys(_) -> List[Tuple[str, Dict]]:
 
 def gen_start_results2message(names, desc_dict):
     keyboards = InlineKeyboardMarkup([
-        [InlineKeyboardButton(desc_dict[name], switch_inline_query_current_chat=f"/{name} <type sth here>")]
+        [InlineKeyboardButton(desc_dict[name], switch_inline_query_current_chat=f"/{name} -h")]
         for name in names
     ])
 
