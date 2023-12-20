@@ -1,4 +1,4 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton
 from typing import List
 
 
@@ -46,4 +46,4 @@ def papers_results2message(res: List, args: object):
                 keyboard[-1].append(keyboards[i*3+j])
     if msg == "":
         msg = "No papers yet"
-    return msg, InlineKeyboardMarkup(keyboard)
+    return msg, keyboard

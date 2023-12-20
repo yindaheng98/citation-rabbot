@@ -1,5 +1,5 @@
 from typing import Tuple, Dict, List
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton
 from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import reconstruct_paper_args
 
@@ -86,7 +86,7 @@ def papers_detail_results2message(res: List, args: object):
             paper_msgs.append(paper_msg)
     papers_msg = "\n".join(paper_msgs)
     msg = papers_msg + authors_msg
-    return msg, InlineKeyboardMarkup(keyboards)
+    return msg, keyboards
 
 
 paper_detail_jump = (
