@@ -97,7 +97,7 @@ def favorite_paper_args2querys(args: object):
     k_or, v_or = [], {}
     with dbm.open(favorites_paper_path, 'c') as db:
         i = 0
-        for v in db:
+        for v in db.keys():
             ks = db[v]
             for k in json.loads(ks.decode("utf8")):
                 k_or.append(f"p.{k}=$fav{i}")
@@ -143,7 +143,7 @@ def show_favorite_keywords_results2message(_, args: object):
     msg = "Your favorited keywords:"
     keyboard = []
     with dbm.open(favorites_keywords_path, 'c') as db:
-        for keyword in db:
+        for keyword in db.keys():
             keyword = keyword.decode(encoding="utf8")
             msg += "\n" + f"<b>{keyword}</b>"
             keyboard.append([
