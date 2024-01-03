@@ -7,7 +7,8 @@ from .rabbot import Rabbot
 from .start import start_args2querys, gen_start_results2message
 from .jumps import *
 default_jumps_name = [
-    "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump", "paper_detail_jump", "add_favorite_paper_jump"
+    "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump", "paper_detail_jump",
+    "add_favorite_paper_jump", "add_favorite_keywords_jump", "show_favorite_keywords_jump"
 ]
 default_jumps = [eval(name) for name in default_jumps_name]
 default_jumps_name = ["start_jump", *default_jumps_name]

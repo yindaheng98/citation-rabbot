@@ -2,11 +2,16 @@ import asyncio
 import re
 import shlex
 from argparse import ArgumentParser
-from typing import Callable, Tuple, Dict, List, Sequence
+from typing import Callable, Tuple, Dict, List, Sequence, NamedTuple
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import filters, Application, ContextTypes, CommandHandler, MessageHandler
 from telegram.constants import ParseMode
+
+
+class ObjArgs(NamedTuple):
+    update: Update
+    context: ContextTypes.DEFAULT_TYPE
 
 
 class Rabbot:
@@ -34,15 +39,19 @@ class Rabbot:
             obj_args = None
             if len(str_args) > 0:
                 lst_args = shlex.split(str_args[0])
-            if (parser_add_arguments is not None and len(lst_args) <= 0) or '-h' in lst_args or '--help' in lst_args:
-                message = re.sub(r"^usage: __main__.py", f"usage: /{name}", parser.format_help())
-                await update.message.reply_text(text=message, reply_to_message_id=update.message.id)
-                return
-            obj_args = parser.parse_args(lst_args)
-            if not hasattr(obj_args, "update"):
-                setattr(obj_args, "update", update)
-            if not hasattr(obj_args, "context"):
-                setattr(obj_args, "context", context)
+            if parser_add_arguments is not None:
+                if len(lst_args) <= 0 or '-h' in lst_args or '--help' in lst_args:
+                    message = re.sub(r"^usage: __main__.py", f"usage: /{name}", parser.format_help())
+                    await update.message.reply_text(text=message, reply_to_message_id=update.message.id)
+                    return
+                else:
+                    obj_args = parser.parse_args(lst_args)
+                    if not hasattr(obj_args, "update"):
+                        setattr(obj_args, "update", update)
+                    if not hasattr(obj_args, "context"):
+                        setattr(obj_args, "context", context)
+            else:
+                obj_args = ObjArgs(update=update, context=context)
             querys = args2querys(obj_args)
             if not querys or len(querys) <= 0:
                 return

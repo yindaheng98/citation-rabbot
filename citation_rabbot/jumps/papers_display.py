@@ -46,4 +46,9 @@ def papers_results2message(res: List, args: object):
                 keyboard[-1].append(keyboards[i*3+j])
     if msg == "":
         msg = "No papers yet"
+    keyboard.append([
+        InlineKeyboardButton(
+            f"Favorite Keywords",
+            switch_inline_query_current_chat=f'/add_favorite_keywords {paper_args}')
+    ])
     return msg, keyboard
