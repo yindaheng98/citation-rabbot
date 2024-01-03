@@ -97,7 +97,8 @@ def favorite_paper_args2querys(args: object):
     k_or, v_or = [], {}
     with dbm.open(favorites_paper_path, 'c') as db:
         i = 0
-        for v, ks in db.items():
+        for v in db:
+            ks = db[v]
             for k in json.loads(ks.decode("utf8")):
                 k_or.append(f"p.{k}=$fav{i}")
                 v_or[f"fav{i}"] = v.decode("utf8")
