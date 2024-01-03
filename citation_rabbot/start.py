@@ -10,10 +10,13 @@ def start_args2querys(_) -> List[Tuple[str, Dict]]:
 
 
 def gen_start_results2message(names, desc_dict):
-    keyboards = [
-        [InlineKeyboardButton(desc_dict[name], switch_inline_query_current_chat=f"/{name} -h")]
-        for name in names
-    ]
+    keyboards = []
+    for name in names:
+        desc = desc_dict[name]
+        cmd = "-h"
+        if isinstance(desc, tuple):
+            desc, cmd = desc
+        keyboards.append([InlineKeyboardButton(desc, switch_inline_query_current_chat=f"/{name} {cmd}")])
 
     def start_results2message(res: List, _):
         msg = "I'm jumping! Here is the places I'm jumping:\n"

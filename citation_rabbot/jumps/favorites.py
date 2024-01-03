@@ -2,7 +2,8 @@ import dbm
 import os
 import json
 from telegram import InlineKeyboardButton
-from .papers_args import add_arguments_papers
+from .papers_args import add_arguments_papers, parse_args_papers
+from .papers_display import papers_results2message
 
 favorites_dirname = os.environ['RABBOT_FAVORITE_DIR'] if 'RABBOT_FAVORITE_DIR' in os.environ else "save/favorites"
 
@@ -88,6 +89,27 @@ rm_favorite_paper_jump = (
 )
 
 
+def favorite_paper_args2querys(args: object):
+    pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
+    return [(
+        f"MATCH (p:Publication) WHERE {pwhere} " +
+        ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
+        f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
+        f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
+        f"RETURN p, j, COUNT(DISTINCT c) AS citation, COUNT(DISTINCT r) AS reference ORDER BY {orderby} LIMIT {limits}",
+        {**values}
+    )]
+
+
+show_favorite_paper_jump = (
+    "show_favorite_paper",
+    add_arguments_papers,
+    favorite_paper_args2querys,
+    papers_results2message,
+    ("Show my favorite papers", "-o date")
+)
+
+
 def add_favorite_keywords_args2querys(args: object):
     username = args.update.message.from_user.username
     favorites_keywords_path = os.path.join(favorites_dirname, username, "keywords")
@@ -133,7 +155,7 @@ show_favorite_keywords_jump = (
     None,
     lambda _: [(f"RETURN true", {})],
     show_favorite_keywords_results2message,
-    "Show my favorite keywords"
+    ("Show my favorite keywords", "")
 )
 
 
