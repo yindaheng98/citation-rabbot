@@ -39,6 +39,10 @@ class Rabbot:
                 await update.message.reply_text(text=message, reply_to_message_id=update.message.id)
                 return
             obj_args = parser.parse_args(lst_args)
+            if not hasattr(obj_args, "update"):
+                setattr(obj_args, "update", update)
+            if not hasattr(obj_args, "context"):
+                setattr(obj_args, "context", context)
             querys = args2querys(obj_args)
             if not querys or len(querys) <= 0:
                 return
@@ -48,7 +52,7 @@ class Rabbot:
             message, keyboard = results2message(results, obj_args)
             reply_markup = InlineKeyboardMarkup([
                 *keyboard, [InlineKeyboardButton(
-                    "Search again",
+                    "Try again",
                     switch_inline_query_current_chat=f"/{name} {str_args[0] if len(str_args) > 0 else ''}"
                 )]
             ])

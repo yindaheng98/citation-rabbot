@@ -86,6 +86,11 @@ def papers_detail_results2message(res: List, args: object):
             paper_msgs.append(paper_msg)
     papers_msg = "\n".join(paper_msgs)
     msg = papers_msg + authors_msg
+    keyboards.append([
+        InlineKeyboardButton(
+            f"Favorite",
+            switch_inline_query_current_chat=f'/add_favorite_paper "{paper_k}" "{paper_v}"')
+    ])
     return msg, keyboards
 
 
