@@ -7,7 +7,7 @@ from .papers_args import add_arguments_papers
 favorites_dirname = os.environ['RABBOT_FAVORITE_DIR'] if 'RABBOT_FAVORITE_DIR' in os.environ else "save/favorites"
 
 
-def add_favorite_paper_parser_add_arguments(parser):
+def favorite_paper_parser_add_arguments(parser):
     parser.add_argument('key', metavar='key', type=str,
                         help='Key and value to identify the paper')
     parser.add_argument('value', metavar='value', type=str,
@@ -19,28 +19,71 @@ def add_favorite_paper_args2querys(args: object):
     username = args.update.message.from_user.username
     favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
     os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
+    k, v = args.key, args.value.encode(encoding="utf8")
     with dbm.open(favorites_paper_path, 'c') as db:
-        if args.value not in db:
-            db[args.value.encode(encoding="utf8")] = json.dumps([args.key]).encode(encoding="utf8")
+        if v not in db:
+            db[v] = json.dumps([k]).encode(encoding="utf8")
         else:
-            old_value = json.loads(db[args.value.encode(encoding="utf8")].decode(encoding="utf8"))
-            new_value = list(set([args.key, *old_value]))
-            db[args.value.encode(encoding="utf8")] = json.dumps(new_value).encode(encoding="utf8")
+            old_k = json.loads(db[v].decode(encoding="utf8"))
+            new_k = list(set([k, *old_k]))
+            db[v] = json.dumps(new_k).encode(encoding="utf8")
+    return [(f"MATCH (p:Publication) WHERE p.{args.key}=$value RETURN p.title", {"value": args.value})]
+
+
+def rm_favorite_paper_args2querys(args: object):
+    username = args.update.message.from_user.username
+    favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
+    os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
+    k, v = args.key, args.value.encode(encoding="utf8")
+    with dbm.open(favorites_paper_path, 'c') as db:
+        if v in db:
+            old_k = set(json.loads(db[v].decode(encoding="utf8")))
+            if k in old_k:
+                old_k.remove(k)
+                new_k = list(old_k)
+                if len(new_k) <= 0:
+                    del db[v]
+                else:
+                    db[v] = json.dumps(new_k).encode(encoding="utf8")
     return [(f"MATCH (p:Publication) WHERE p.{args.key}=$value RETURN p.title", {"value": args.value})]
 
 
 def add_favorite_paper_results2message(res, args: object):
-    msg = f"Paper added in favorites.\n{args.key}:{args.value}:"
+    msg = f"Paper added in favorites. {args.key}:{args.value}"
     for r in res[0]:
-        msg += "\n" + r[0]
-    return msg, []
+        msg += "\n" + f"<b>{r[0]}</b>"
+    return msg, [[
+        InlineKeyboardButton(
+            f'Remove it',
+            switch_inline_query_current_chat=f'/rm_favorite_paper "{args.key}" "{args.value}"')
+    ]]
+
+
+def rm_favorite_paper_results2message(res, args: object):
+    msg = f"Paper removed from favorites. {args.key}:{args.value}"
+    for r in res[0]:
+        msg += "\n" + f"<b>{r[0]}</b>"
+    return msg, [[
+        InlineKeyboardButton(
+            f'Revoke it',
+            switch_inline_query_current_chat=f'/add_favorite_paper "{args.key}" "{args.value}"')
+    ]]
 
 
 add_favorite_paper_jump = (
     "add_favorite_paper",
-    add_favorite_paper_parser_add_arguments,
+    favorite_paper_parser_add_arguments,
     add_favorite_paper_args2querys,
     add_favorite_paper_results2message,
+    None
+)
+
+
+rm_favorite_paper_jump = (
+    "rm_favorite_paper",
+    favorite_paper_parser_add_arguments,
+    rm_favorite_paper_args2querys,
+    rm_favorite_paper_results2message,
     None
 )
 
