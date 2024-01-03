@@ -4,7 +4,7 @@ import json
 from telegram import InlineKeyboardButton
 from .papers_args import add_arguments_papers
 
-favorites_dirname = "save/favorites"
+favorites_dirname = os.environ['RABBOT_FAVORITE_DIR'] if 'RABBOT_FAVORITE_DIR' in os.environ else "save/favorites"
 
 
 def add_favorite_paper_parser_add_arguments(parser):
@@ -64,7 +64,7 @@ def show_favorite_keywords_results2message(_, args: object):
     with dbm.open(favorites_keywords_path, 'c') as db:
         for keyword in db:
             keyword = keyword.decode(encoding="utf8")
-            msg += "\n" + keyword
+            msg += "\n" + f"<b>{keyword}</b>"
             keyboard.append([
                 InlineKeyboardButton(
                     f'Use "{keyword}"',
@@ -109,7 +109,7 @@ def rm_favorite_keywords_results2message(_, args: object):
     msg = "The following keywords removed:"
     keyboard = []
     for keyword in args.keyword:
-        msg += "\n" + keyword
+        msg += "\n" + f"<b>{keyword}</b>"
         keyboard.append([
             InlineKeyboardButton(
                 f'Revoke "{keyword}"',
