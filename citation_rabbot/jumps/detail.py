@@ -88,8 +88,11 @@ def papers_detail_results2message(res: List, args: object):
     msg = papers_msg + authors_msg
     keyboards.append([
         InlineKeyboardButton(
-            f"Favorite",
-            switch_inline_query_current_chat=f'/add_favorite_paper "{paper_k}" "{paper_v}"')
+            f"Add Favorite Paper",
+            switch_inline_query_current_chat=f'/add_favorite_paper "{paper_k}" "{paper_v}"'),
+        InlineKeyboardButton(
+            f"Remove Favorite Paper",
+            switch_inline_query_current_chat=f'/rm_favorite_paper "{paper_k}" "{paper_v}"')
     ])
     return msg, keyboards
 

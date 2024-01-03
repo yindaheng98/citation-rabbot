@@ -48,7 +48,10 @@ def papers_results2message(res: List, args: object):
         msg = "No papers yet"
     keyboard.append([
         InlineKeyboardButton(
-            f"Favorite Keywords",
-            switch_inline_query_current_chat=f'/add_favorite_keywords {paper_args}')
+            f"Add Favorite Keywords",
+            switch_inline_query_current_chat=f'/add_favorite_keywords {paper_args}'),
+        InlineKeyboardButton(
+            f"Remove Favorite Keywords",
+            switch_inline_query_current_chat=f'/rm_favorite_keywords {paper_args}')
     ])
     return msg, keyboard

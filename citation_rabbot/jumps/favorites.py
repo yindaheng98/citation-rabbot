@@ -56,7 +56,10 @@ def add_favorite_paper_results2message(res, args: object):
     return msg, [[
         InlineKeyboardButton(
             f'Remove it',
-            switch_inline_query_current_chat=f'/rm_favorite_paper "{args.key}" "{args.value}"')
+            switch_inline_query_current_chat=f'/rm_favorite_paper "{args.key}" "{args.value}"'),
+        InlineKeyboardButton(
+            f'Show all',
+            switch_inline_query_current_chat=f'/show_favorite_paper -o date')
     ]]
 
 
@@ -67,7 +70,10 @@ def rm_favorite_paper_results2message(res, args: object):
     return msg, [[
         InlineKeyboardButton(
             f'Revoke it',
-            switch_inline_query_current_chat=f'/add_favorite_paper "{args.key}" "{args.value}"')
+            switch_inline_query_current_chat=f'/add_favorite_paper "{args.key}" "{args.value}"'),
+        InlineKeyboardButton(
+            f'Show all',
+            switch_inline_query_current_chat=f'/show_favorite_paper -o date')
     ]]
 
 
@@ -194,7 +200,10 @@ def rm_favorite_keywords_results2message(_, args: object):
         keyboard.append([
             InlineKeyboardButton(
                 f'Revoke "{keyword}"',
-                switch_inline_query_current_chat=f'/add_favorite_keywords -k "{keyword}"')
+                switch_inline_query_current_chat=f'/add_favorite_keywords -k "{keyword}"'),
+            InlineKeyboardButton(
+                f'Show all',
+                switch_inline_query_current_chat=f'/show_favorite_keywords')
         ])
     return msg, keyboard
 
