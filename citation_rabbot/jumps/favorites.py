@@ -90,7 +90,22 @@ rm_favorite_paper_jump = (
 
 
 def favorite_paper_args2querys(args: object):
+    username = args.update.message.from_user.username
+    favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
+    os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
     pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
+    k_or, v_or = [], {}
+    with dbm.open(favorites_paper_path, 'c') as db:
+        i = 0
+        for v, ks in db.items():
+            for k in json.loads(ks.decode("utf8")):
+                k_or.append(f"p.{k}=$fav{i}")
+                v_or[f"fav{i}"] = v.decode("utf8")
+                i += 1
+    if len(k_or) <= 0:
+        return []
+    pwhere += " AND " + f"({' or '.join(k_or)})"
+    values = {**values, **v_or}
     return [(
         f"MATCH (p:Publication) WHERE {pwhere} " +
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
