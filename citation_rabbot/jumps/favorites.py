@@ -90,5 +90,38 @@ show_favorite_keywords_jump = (
     None,
     lambda _: [(f"RETURN true", {})],
     show_favorite_keywords_results2message,
-    "Show your favorite keywords"
+    "Show my favorite keywords"
+)
+
+
+def rm_favorite_keywords_args2querys(args: object):
+    username = args.update.message.from_user.username
+    favorites_keywords_path = os.path.join(favorites_dirname, username, "keywords")
+    os.makedirs(os.path.dirname(favorites_keywords_path), exist_ok=True)
+    with dbm.open(favorites_keywords_path, 'c') as db:
+        for keyword in args.keyword:
+            if keyword.encode(encoding="utf8") in db:
+                del db[keyword.encode(encoding="utf8")]
+    return [(f"RETURN true", {})]
+
+
+def rm_favorite_keywords_results2message(_, args: object):
+    msg = "The following keywords removed:"
+    keyboard = []
+    for keyword in args.keyword:
+        msg += "\n" + keyword
+        keyboard.append([
+            InlineKeyboardButton(
+                f'Revoke "{keyword}"',
+                switch_inline_query_current_chat=f'/add_favorite_keywords -k "{keyword}"')
+        ])
+    return msg, keyboard
+
+
+rm_favorite_keywords_jump = (
+    "rm_favorite_keywords",
+    add_arguments_papers,
+    rm_favorite_keywords_args2querys,
+    rm_favorite_keywords_results2message,
+    None
 )
