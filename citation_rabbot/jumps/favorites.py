@@ -155,7 +155,7 @@ def show_favorite_keywords_results2message(_, args: object):
             keyboard.append([
                 InlineKeyboardButton(
                     f'Use "{keyword}"',
-                    switch_inline_query_current_chat=f'/search_by_title -k "{keyword}"'),
+                    switch_inline_query_current_chat=f'/search_by_title -k "{keyword}" -o date'),
                 InlineKeyboardButton(
                     f'Remove "{keyword}"',
                     switch_inline_query_current_chat=f'/rm_favorite_keywords -k "{keyword}"')
