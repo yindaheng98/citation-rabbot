@@ -54,7 +54,10 @@ def papers_detail_results2message(res: List, args: object):
         elif "dblp_pid" in author:
             k, v = "dblp_id", author["dblp_id"]
             author_msg = f'<a href="https://dblp.org/pid/{author["dblp_pid"]}.html"><b>{author["name"]}</b></a>'
-        author_details.append(f"{author_msg} {n_papers} papers")
+        author_msg += f", {n_papers} papers"
+        if "homepage" in author:
+            author_msg += f', <a href="{author["homepage"]}">home</a>'
+        author_details.append(author_msg)
         if k is not None:
             author_keyboards.append(
                 InlineKeyboardButton(
