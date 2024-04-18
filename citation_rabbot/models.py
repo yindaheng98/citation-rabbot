@@ -3,6 +3,11 @@ from typing import Callable, Tuple, Dict, List, Sequence, NamedTuple, Optional
 from telegram import InlineKeyboardButton
 
 
+class ObjArgs(NamedTuple):
+    username: str
+    # Add more in future
+
+
 class Description(NamedTuple):
     help: str
     default_args: str

@@ -18,7 +18,7 @@ def favorite_paper_parser_add_arguments(parser):
 
 
 def add_favorite_paper_args2querys(args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
     os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
     k, v = args.key, args.value.encode(encoding="utf8")
@@ -33,7 +33,7 @@ def add_favorite_paper_args2querys(args: object):
 
 
 def rm_favorite_paper_args2querys(args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
     os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
     k, v = args.key, args.value.encode(encoding="utf8")
@@ -97,7 +97,7 @@ rm_favorite_paper_jump = Jump(
 
 
 def favorite_paper_args2querys(args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_paper_path = os.path.join(favorites_dirname, username, "papers")
     os.makedirs(os.path.dirname(favorites_paper_path), exist_ok=True)
     pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
@@ -134,7 +134,7 @@ show_favorite_paper_jump = Jump(
 
 
 def add_favorite_keywords_args2querys(args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_keywords_path = os.path.join(favorites_dirname, username, "keywords")
     os.makedirs(os.path.dirname(favorites_keywords_path), exist_ok=True)
     with dbm.open(favorites_keywords_path, 'c') as db:
@@ -144,7 +144,7 @@ def add_favorite_keywords_args2querys(args: object):
 
 
 def show_favorite_keywords_results2message(_, args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_keywords_path = os.path.join(favorites_dirname, username, "keywords")
     os.makedirs(os.path.dirname(favorites_keywords_path), exist_ok=True)
     msg = "Your favorited keywords:"
@@ -183,7 +183,7 @@ show_favorite_keywords_jump = Jump(
 
 
 def rm_favorite_keywords_args2querys(args: object):
-    username = args.update.message.from_user.username
+    username = args.username
     favorites_keywords_path = os.path.join(favorites_dirname, username, "keywords")
     os.makedirs(os.path.dirname(favorites_keywords_path), exist_ok=True)
     with dbm.open(favorites_keywords_path, 'c') as db:

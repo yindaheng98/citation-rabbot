@@ -2,17 +2,11 @@ import asyncio
 import re
 import shlex
 from argparse import ArgumentParser
-from typing import NamedTuple
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import filters, Application, ContextTypes, CommandHandler, MessageHandler
 from telegram.constants import ParseMode
-from .models import Jump
-
-
-class ObjArgs(NamedTuple):
-    update: Update
-    context: ContextTypes.DEFAULT_TYPE
+from .models import Jump, ObjArgs
 
 
 class Rabbot:
@@ -48,12 +42,10 @@ class Rabbot:
                     return
                 else:
                     obj_args = parser.parse_args(lst_args)
-                    if not hasattr(obj_args, "update"):
-                        setattr(obj_args, "update", update)
-                    if not hasattr(obj_args, "context"):
-                        setattr(obj_args, "context", context)
+                    if not hasattr(obj_args, "username"):
+                        setattr(obj_args, "username", update.message.from_user.username)
             else:
-                obj_args = ObjArgs(update=update, context=context)
+                obj_args = ObjArgs(username=update.message.from_user.username)
             querys = args2querys(obj_args)
             if not querys or len(querys) <= 0:
                 return
