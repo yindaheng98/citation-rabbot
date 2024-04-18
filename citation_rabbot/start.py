@@ -1,5 +1,6 @@
 from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton
+from .rabbot import Description
 
 
 def start_args2querys(_) -> List[Tuple[str, Dict]]:
@@ -14,8 +15,8 @@ def gen_start_results2message(names, desc_dict):
     for name in names:
         desc = desc_dict[name]
         cmd = "-h"
-        if isinstance(desc, tuple):
-            desc, cmd = desc
+        if isinstance(desc, Description):
+            desc, cmd = desc.help, desc.default_args
         keyboards.append([InlineKeyboardButton(desc, switch_inline_query_current_chat=f"/{name} {cmd}")])
 
     def start_results2message(res: List, _):

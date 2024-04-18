@@ -2,7 +2,7 @@ import dbm
 import os
 import json
 from telegram import InlineKeyboardButton
-from citation_rabbot.rabbot import Jump
+from citation_rabbot.rabbot import Jump, Description
 from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import papers_results2message
 
@@ -129,7 +129,7 @@ show_favorite_paper_jump = Jump(
     parser_add_arguments=add_arguments_papers,
     args2querys=favorite_paper_args2querys,
     results2message=papers_results2message,
-    description=("Show my favorite papers", "-o date")
+    description=Description(help="Show my favorite papers", default_args="-o date")
 )
 
 
@@ -178,7 +178,7 @@ show_favorite_keywords_jump = Jump(
     parser_add_arguments=None,
     args2querys=lambda _: [(f"RETURN true", {})],
     results2message=show_favorite_keywords_results2message,
-    description=("Show my favorite keywords", "")
+    description=Description(help="Show my favorite keywords", default_args="")
 )
 
 

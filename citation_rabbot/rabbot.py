@@ -14,12 +14,17 @@ class ObjArgs(NamedTuple):
     context: ContextTypes.DEFAULT_TYPE
 
 
+class Description(NamedTuple):
+    help: str
+    default_args: str
+
+
 class Jump(NamedTuple):
     name: str
     parser_add_arguments: Optional[Callable[[ArgumentParser], ArgumentParser]]
     args2querys: Callable[[object], List[Tuple[str, Dict]]]
     results2message: Callable[[List, object], Tuple[str, Sequence[Sequence[InlineKeyboardButton]]]]
-    description: Optional[str]
+    description: Optional[str | Description]
 
 
 class Rabbot:
