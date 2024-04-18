@@ -2,7 +2,7 @@ import asyncio
 import re
 import shlex
 from argparse import ArgumentParser
-from typing import Callable, Tuple, Dict, List, Sequence, NamedTuple
+from typing import Callable, Tuple, Dict, List, Sequence, NamedTuple, Optional
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import filters, Application, ContextTypes, CommandHandler, MessageHandler
@@ -12,6 +12,14 @@ from telegram.constants import ParseMode
 class ObjArgs(NamedTuple):
     update: Update
     context: ContextTypes.DEFAULT_TYPE
+
+
+class Jump(NamedTuple):
+    name: str
+    parser_add_arguments: Optional[Callable[[ArgumentParser], ArgumentParser]]
+    args2querys: Callable[[object], List[Tuple[str, Dict]]]
+    results2message: Callable[[List, object], Tuple[str, Sequence[Sequence[InlineKeyboardButton]]]]
+    description: Optional[str]
 
 
 class Rabbot:
@@ -24,10 +32,11 @@ class Rabbot:
         me = await self.app.bot.get_me()
         self.bot_name = me.name
 
-    def add_jump(self, name: str,
-                 parser_add_arguments: Callable[[ArgumentParser], ArgumentParser],
-                 args2querys: Callable[[object], List[Tuple[str, Dict]]],
-                 results2message: Callable[[List, object], Tuple[str, Sequence[Sequence[InlineKeyboardButton]]]]):
+    def add_jump(self, jump: Jump):
+        name = jump.name
+        parser_add_arguments = jump.parser_add_arguments
+        args2querys = jump.args2querys
+        results2message = jump.results2message
         parser = ArgumentParser(add_help=False, exit_on_error=False)
         parser.add_argument('-h', '--help', action='store_true', help='Show help message.')
         if parser_add_arguments:

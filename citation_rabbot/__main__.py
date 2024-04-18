@@ -3,7 +3,7 @@ import logging
 from neo4j import GraphDatabase
 from telegram.ext import Application, ApplicationBuilder
 from .arg import add_argument_jump, parse_args_jump
-from .rabbot import Rabbot
+from .rabbot import Rabbot, Jump
 from .start import start_args2querys, gen_start_results2message
 from .jumps import *
 default_jumps_name = [
@@ -32,17 +32,16 @@ args = parser.parse_args()
 jump_list = parse_args_jump(parser)
 
 # Parse jump list
-jump_dict = {name: (parser, message2query, result2message)
-             for name, parser, message2query, result2message, _ in jump_list}
-desc_dict = {name: desc for name, _, _, _, desc in jump_list if desc}
-desc_order = [name for name, _, _, _, desc in jump_list if desc]
+jump_dict = {jump.name: jump for jump in jump_list}
+desc_dict = {jump.name: jump.description for jump in jump_list if jump.description}
+desc_order = [jump.name for jump in jump_list if jump.description]
 # Add default jumps
-for name, parser, message2query, result2message, desc in default_jumps:
-    if name not in jump_dict:
-        jump_dict[name] = (parser, message2query, result2message)
-    if desc:
-        desc_dict[name] = desc
-        desc_order.append(name)
+for jump in default_jumps:
+    if jump.name not in jump_dict:
+        jump_dict[jump.name] = jump
+    if jump.description:
+        desc_dict[jump.name] = jump.description
+        desc_order.append(jump.name)
 
 
 async def post_init(application: Application):
@@ -52,7 +51,13 @@ application = ApplicationBuilder().token(args.token).post_init(post_init).build(
 with GraphDatabase.driver(args.uri, auth=(args.username, args.password)) as driver:
     with driver.session() as session:
         rabbot = Rabbot(app=application, session=session)
-        for name, (parser, message2query, result2message) in jump_dict.items():
-            rabbot.add_jump(name, parser, message2query, result2message)
-        rabbot.add_jump('start', None, start_args2querys, gen_start_results2message(desc_order, desc_dict))
+        for name, jump in jump_dict.items():
+            rabbot.add_jump(jump)
+        rabbot.add_jump(Jump(
+            name="start",
+            parser_add_arguments=None,
+            args2querys=start_args2querys,
+            results2message=gen_start_results2message(desc_order, desc_dict),
+            description=None
+        ))
         application.run_polling()

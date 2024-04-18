@@ -1,5 +1,6 @@
 from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton
+from citation_rabbot.rabbot import Jump
 from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import reconstruct_paper_args
 
@@ -100,10 +101,10 @@ def papers_detail_results2message(res: List, args: object):
     return msg, keyboards
 
 
-paper_detail_jump = (
-    "paper_detail",
-    paper_detail_parser_add_arguments,
-    paper_detail_args2querys,
-    papers_detail_results2message,
-    None
+paper_detail_jump = Jump(
+    name="paper_detail",
+    parser_add_arguments=paper_detail_parser_add_arguments,
+    args2querys=paper_detail_args2querys,
+    results2message=papers_detail_results2message,
+    description=None
 )

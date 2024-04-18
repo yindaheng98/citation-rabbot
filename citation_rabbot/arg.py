@@ -8,7 +8,7 @@ def add_argument_jump(parser: argparse.ArgumentParser, *flags, dest: str = 'jump
         flags = ['-j', '--jump']
     parser.add_argument(
         *flags, dest=dest, action='append', required=False, default=[],
-        help=f'A jump! Variable name of a python tuple: <name>,<args2querys>,<results2message>,<description>. '
+        help=f'A jump! Variable name of a python named tuple: <name>,<parser_add_arguments>,<args2querys>,<results2message>,<description>. '
         'If you set <description>, the command will become explict (show in chat by set_my_commands '
         'like https://stackoverflow.com/questions/62607644/bot-set-my-command-using-this-function-how-to-set-commands-and-how-to-pass-arg). '
         'Default: '+defaults_desc

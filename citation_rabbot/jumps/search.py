@@ -1,3 +1,4 @@
+from citation_rabbot.rabbot import Jump
 from typing import Tuple, Dict, List
 from .papers_display import papers_results2message
 from .papers_args import add_arguments_papers, parse_args_papers
@@ -15,10 +16,10 @@ def search_by_title_args2querys(args: object) -> List[Tuple[str, Dict]]:
     )]
 
 
-search_by_title_jump = (
-    "search_by_title",
-    add_arguments_papers,
-    search_by_title_args2querys,
-    papers_results2message,
-    "Search papers by keywords in title"
+search_by_title_jump = Jump(
+    name="search_by_title",
+    parser_add_arguments=add_arguments_papers,
+    args2querys=search_by_title_args2querys,
+    results2message=papers_results2message,
+    description="Search papers by keywords in title"
 )

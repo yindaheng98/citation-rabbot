@@ -2,6 +2,7 @@ import dbm
 import os
 import json
 from telegram import InlineKeyboardButton
+from citation_rabbot.rabbot import Jump
 from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import papers_results2message
 
@@ -77,21 +78,21 @@ def rm_favorite_paper_results2message(res, args: object):
     ]]
 
 
-add_favorite_paper_jump = (
-    "add_favorite_paper",
-    favorite_paper_parser_add_arguments,
-    add_favorite_paper_args2querys,
-    add_favorite_paper_results2message,
-    None
+add_favorite_paper_jump = Jump(
+    name="add_favorite_paper",
+    parser_add_arguments=favorite_paper_parser_add_arguments,
+    args2querys=add_favorite_paper_args2querys,
+    results2message=add_favorite_paper_results2message,
+    description=None
 )
 
 
-rm_favorite_paper_jump = (
-    "rm_favorite_paper",
-    favorite_paper_parser_add_arguments,
-    rm_favorite_paper_args2querys,
-    rm_favorite_paper_results2message,
-    None
+rm_favorite_paper_jump = Jump(
+    name="rm_favorite_paper",
+    parser_add_arguments=favorite_paper_parser_add_arguments,
+    args2querys=rm_favorite_paper_args2querys,
+    results2message=rm_favorite_paper_results2message,
+    description=None
 )
 
 
@@ -123,12 +124,12 @@ def favorite_paper_args2querys(args: object):
     )]
 
 
-show_favorite_paper_jump = (
-    "show_favorite_paper",
-    add_arguments_papers,
-    favorite_paper_args2querys,
-    papers_results2message,
-    ("Show my favorite papers", "-o date")
+show_favorite_paper_jump = Jump(
+    name="show_favorite_paper",
+    parser_add_arguments=add_arguments_papers,
+    args2querys=favorite_paper_args2querys,
+    results2message=papers_results2message,
+    description=("Show my favorite papers", "-o date")
 )
 
 
@@ -163,21 +164,21 @@ def show_favorite_keywords_results2message(_, args: object):
     return msg, keyboard
 
 
-add_favorite_keywords_jump = (
-    "add_favorite_keywords",
-    add_arguments_papers,
-    add_favorite_keywords_args2querys,
-    show_favorite_keywords_results2message,
-    None
+add_favorite_keywords_jump = Jump(
+    name="add_favorite_keywords",
+    parser_add_arguments=add_arguments_papers,
+    args2querys=add_favorite_keywords_args2querys,
+    results2message=show_favorite_keywords_results2message,
+    description=None
 )
 
 
-show_favorite_keywords_jump = (
-    "show_favorite_keywords",
-    None,
-    lambda _: [(f"RETURN true", {})],
-    show_favorite_keywords_results2message,
-    ("Show my favorite keywords", "")
+show_favorite_keywords_jump = Jump(
+    name="show_favorite_keywords",
+    parser_add_arguments=None,
+    args2querys=lambda _: [(f"RETURN true", {})],
+    results2message=show_favorite_keywords_results2message,
+    description=("Show my favorite keywords", "")
 )
 
 
@@ -208,10 +209,10 @@ def rm_favorite_keywords_results2message(_, args: object):
     return msg, keyboard
 
 
-rm_favorite_keywords_jump = (
-    "rm_favorite_keywords",
-    add_arguments_papers,
-    rm_favorite_keywords_args2querys,
-    rm_favorite_keywords_results2message,
-    None
+rm_favorite_keywords_jump = Jump(
+    name="rm_favorite_keywords",
+    parser_add_arguments=add_arguments_papers,
+    args2querys=rm_favorite_keywords_args2querys,
+    results2message=rm_favorite_keywords_results2message,
+    description=None
 )
