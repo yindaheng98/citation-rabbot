@@ -2,29 +2,17 @@ import asyncio
 import re
 import shlex
 from argparse import ArgumentParser
-from typing import Callable, Tuple, Dict, List, Sequence, NamedTuple, Optional
+from typing import NamedTuple
 from neo4j import Session
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import filters, Application, ContextTypes, CommandHandler, MessageHandler
 from telegram.constants import ParseMode
+from .models import Jump
 
 
 class ObjArgs(NamedTuple):
     update: Update
     context: ContextTypes.DEFAULT_TYPE
-
-
-class Description(NamedTuple):
-    help: str
-    default_args: str
-
-
-class Jump(NamedTuple):
-    name: str
-    parser_add_arguments: Optional[Callable[[ArgumentParser], ArgumentParser]]
-    args2querys: Callable[[object], List[Tuple[str, Dict]]]
-    results2message: Callable[[List, object], Tuple[str, Sequence[Sequence[InlineKeyboardButton]]]]
-    description: Optional[str | Description]
 
 
 class Rabbot:

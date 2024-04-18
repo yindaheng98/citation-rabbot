@@ -1,6 +1,6 @@
 from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton
-from .rabbot import Description
+from .models import Description
 
 
 def start_args2querys(_) -> List[Tuple[str, Dict]]:

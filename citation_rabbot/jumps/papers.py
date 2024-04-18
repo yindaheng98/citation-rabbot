@@ -1,4 +1,4 @@
-from citation_rabbot.rabbot import Jump
+from citation_rabbot.models import Jump
 from .papers_query import author_papers_parser_add_arguments, papers_parser_add_arguments
 from .papers_query import author_papers_args2querys, references_args2querys, citations_args2querys
 from .papers_display import papers_results2message

@@ -1,4 +1,4 @@
-from citation_rabbot.rabbot import Jump
+from citation_rabbot.models import Jump
 from typing import Tuple, Dict, List
 from .papers_display import papers_results2message
 from .papers_args import add_arguments_papers, parse_args_papers

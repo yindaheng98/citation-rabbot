@@ -1,6 +1,6 @@
 from typing import Tuple, Dict, List
 from telegram import InlineKeyboardButton
-from citation_rabbot.rabbot import Jump
+from citation_rabbot.models import Jump
 from .papers_args import add_arguments_papers, parse_args_papers
 from .papers_display import reconstruct_paper_args
 
