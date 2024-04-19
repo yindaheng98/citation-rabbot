@@ -33,17 +33,17 @@ def add_arguments_papers(parser: ArgumentParser):
     return parser
 
 
-def parse_args_papers(args: object):
+def parse_args_papers_order(args: object):
     orderby = 'citation DESC'
     if args.order == Order.Year:
         orderby = 'p.year DESC, citation DESC'
     elif args.order == Order.Date:
         orderby = 'p.year DESC, COALESCE(p.date, date("1970-01-01")) DESC, citation DESC'
+    return orderby
 
-    limits = "$limit"
-    pwhere = 'p.year >= $year'
-    values = dict(year=args.year, limit=args.limit)
 
+def parse_args_papers_keyword(args: object):
+    pwhere, values = '', {}
     ki, k_or, v_or = 0, [], {}
     for keywords in args.keyword:
         k_and, v_and = [], {}
@@ -58,9 +58,28 @@ def parse_args_papers(args: object):
     if ki > 0:
         pwhere += " AND " + f"({' OR '.join(k_or)})"
         values = {**values, **v_or}
+    return pwhere, values
 
-    pwhere += (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
+
+def parse_args_papers_where(args: object):
+    pwhere = (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
     jwhere = ''
     if len(args.where_journal) > 0:
         jwhere = ' AND '.join(['j.' + w for w in args.where_journal])
+    return pwhere, jwhere
+
+
+def parse_args_papers(args: object):
+    orderby = parse_args_papers_order(args)
+
+    limits = "$limit"
+    pwhere = 'p.year >= $year'
+    values = dict(year=args.year, limit=args.limit)
+
+    kpwhere, kvalues = parse_args_papers_keyword(args)
+    pwhere += kpwhere
+    values = {**values, **kvalues}
+
+    wpwhere, jwhere = parse_args_papers_where(args)
+    pwhere += wpwhere
     return pwhere, jwhere, orderby, limits, values
