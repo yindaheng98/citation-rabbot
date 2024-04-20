@@ -1,6 +1,7 @@
 import argparse
 import importlib
 from .jumps import *
+from .models import Jump
 
 
 def add_argument_jump(parser: argparse.ArgumentParser, *flags, dest: str = 'jump', defaults_desc="") -> None:
@@ -20,6 +21,6 @@ def parse_args_jump(parser: argparse.ArgumentParser, jump_dest: str = 'jump'):
     jump_list = []
     for jump_s in args.__getattribute__(jump_dest):
         jump = eval(jump_s)
-        if isinstance(jump, tuple):
+        if isinstance(jump, Jump):
             jump_list.append(jump)
     return jump_list
