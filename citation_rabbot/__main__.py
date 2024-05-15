@@ -7,7 +7,9 @@ from .rabbot import Rabbot, Jump
 from .start import start_args2querys, gen_start_results2message
 from .jumps import *
 default_jumps_name = [
-    "author_papers_jump", "citations_jump", "references_jump", "search_by_title_jump", "search_by_abstract_jump", "paper_detail_jump",
+    "author_papers_jump", "citations_jump", "references_jump",
+    "search_by_title_jump", "search_by_title_semantic_jump", "search_by_abstract_semantic_jump",
+    "paper_detail_jump",
     "add_favorite_paper_jump", "show_favorite_paper_jump", "rm_favorite_paper_jump",
     "add_favorite_keywords_jump", "show_favorite_keywords_jump", "rm_favorite_keywords_jump"
 ]
