@@ -64,7 +64,7 @@ def parse_args_papers_keyword_lucene(args: object):
             if not k:
                 continue
             k_and.append(k.lower())
-        k_or.append(f"{' AND '.join(k_and)}")
+        k_or.append(f"{' '.join(k_and)}")
     if len(k_or) <= 0:
         return ''
     if 0 < len(k_or) <= 1:
@@ -82,8 +82,10 @@ def add_arguments_papers_where(parser: ArgumentParser):
     return parser
 
 
-def parse_args_papers_where(args: object):
-    pwhere = (" AND " + f"({' AND '.join(['p.' + w for w in args.where_paper])})") if len(args.where_paper) > 0 else ""
+def parse_args_papers_where(args: object, perfix='p.'):
+    pwhere = (
+        " AND " + f"({' AND '.join([perfix + w for w in args.where_paper])})"
+    ) if len(args.where_paper) > 0 else ""
     jwhere = ''
     if len(args.where_journal) > 0:
         jwhere = ' AND '.join(['j.' + w for w in args.where_journal])
@@ -117,14 +119,14 @@ def parse_args_papers_fulltext_index(args: object):
     orderby = parse_args_papers_order(args)
 
     limits = "$limit"
-    pwhere = 'p.year >= $year'
+    pwhere = 'node.year >= $year'
     values = dict(year=args.year, limit=args.limit)
 
-    lucene = parse_args_papers_keyword_lucene(args)
+    lucenes = parse_args_papers_keyword_lucene(args)
 
-    wpwhere, jwhere = parse_args_papers_where(args)
+    wpwhere, jwhere = parse_args_papers_where(args, perfix="node.")
     pwhere += wpwhere
-    return lucene, pwhere, jwhere, orderby, limits, values
+    return lucenes, pwhere, jwhere, orderby, limits, values
 
 
 def add_arguments_papers(parser: ArgumentParser):
