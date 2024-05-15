@@ -56,6 +56,22 @@ def parse_args_papers_keyword(args: object):
     return pwhere, values
 
 
+def parse_args_papers_keyword_lucene(args: object):
+    k_or = []
+    for keywords in args.keyword:
+        k_and = []
+        for k in keywords.split(" "):
+            if not k:
+                continue
+            k_and.append(k.lower())
+        k_or.append(f"{' AND '.join(k_and)}")
+    if len(k_or) <= 0:
+        return ''
+    if 0 < len(k_or) <= 1:
+        return k_or[0]
+    return ' OR '.join([f'({k})' for k in k_or])
+
+
 def add_arguments_papers_where(parser: ArgumentParser):
     parser.add_argument("-p", "--where_paper", action='append', default=[],
                         help="Specify rules for match paper in the database. "
@@ -95,6 +111,20 @@ def parse_args_papers(args: object):
     wpwhere, jwhere = parse_args_papers_where(args)
     pwhere += wpwhere
     return pwhere, jwhere, orderby, limits, values
+
+
+def parse_args_papers_fulltext_index(args: object):
+    orderby = parse_args_papers_order(args)
+
+    limits = "$limit"
+    pwhere = 'p.year >= $year'
+    values = dict(year=args.year, limit=args.limit)
+
+    lucene = parse_args_papers_keyword_lucene(args)
+
+    wpwhere, jwhere = parse_args_papers_where(args)
+    pwhere += wpwhere
+    return lucene, pwhere, jwhere, orderby, limits, values
 
 
 def add_arguments_papers(parser: ArgumentParser):
