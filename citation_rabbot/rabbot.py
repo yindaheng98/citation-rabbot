@@ -71,5 +71,7 @@ class Rabbot:
             split = re.findall(f"^{self.bot_name} +(/{name} *.*)", update.message.text)
             if len(split) > 0:
                 await handler(split[0], update, context)
-        message_handler = MessageHandler(filters.Regex(f"^{self.bot_name} +/{name}"), wrap_handler)
+        message_handler = MessageHandler(filters.Regex(f"^{self.bot_name} +/{name} "), wrap_handler)
+        self.app.add_handler(message_handler)
+        message_handler = MessageHandler(filters.Regex(f"^{self.bot_name} +/{name}$"), wrap_handler)
         self.app.add_handler(message_handler)
