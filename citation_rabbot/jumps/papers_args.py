@@ -46,8 +46,8 @@ def parse_args_papers_keyword(args: object):
             if not k:
                 continue
             ki += 1
-            k_and.append(f"toLower(p.title) CONTAINS $keyword{ki}")
-            v_and[f"keyword{ki}"] = k
+            k_and.append(f"p.title_hash CONTAINS $keyword{ki}")
+            v_and[f"keyword{ki}"] = k.lower()
         k_or.append(f"({' and '.join(k_and)})")
         v_or = {**v_or, **v_and}
     if ki > 0:
