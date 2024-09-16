@@ -6,7 +6,6 @@ def reconstruct_paper_args(args: object):
     paper_args = ""
     paper_args += f"--order {args.order} "
     paper_args += f"--year {args.year} "
-    paper_args += ' '.join([f'--keyword "{k}"' for k in args.keyword]) + " "
     paper_args += ' '.join([f'--where_paper "{kv}"' for kv in args.where_paper]) + " "
     paper_args += ' '.join([f'--where_journal "{kv}"' for kv in args.where_journal]) + " "
     paper_args += f"--limit {args.limit}"
