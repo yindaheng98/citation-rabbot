@@ -34,7 +34,7 @@ def papers_parser_add_arguments(papers_parser):
 
 
 def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
+    _, jwhere, orderby, limits, values = parse_args_papers(args)
     paper_k, paper_v = args.key, args.value
     return [(
         f"MATCH (p:Publication)<-[:CITE]-(a:Publication) WHERE a.{paper_k}=$value " +
@@ -47,11 +47,10 @@ def references_args2querys(args: object) -> List[Tuple[str, Dict]]:
 
 
 def citations_args2querys(args: object) -> List[Tuple[str, Dict]]:
-    pwhere, jwhere, orderby, limits, values = parse_args_papers(args)
+    _, jwhere, orderby, limits, values = parse_args_papers(args)
     paper_k, paper_v = args.key, args.value
     return [(
-        f"MATCH (p:Publication)-[:CITE]->(a:Publication) WHERE a.{paper_k}=$value "
-        f"MATCH (p:Publication) WHERE {pwhere} " +
+        f"MATCH (p:Publication)-[:CITE]->(a:Publication) WHERE a.{paper_k}=$value " +
         ("OPTIONAL MATCH (p:Publication)-[:PUBLISH]->(j:Journal) " if jwhere == '' else f"MATCH (p:Publication)-[:PUBLISH]->(j:Journal) WHERE {jwhere} ") +
         f"OPTIONAL MATCH (c:Publication)-[:CITE]->(p:Publication) "
         f"OPTIONAL MATCH (r:Publication)<-[:CITE]-(p:Publication) "
